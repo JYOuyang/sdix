@@ -130,6 +130,8 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .tooltip .tt-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
 .tooltip .tt-row .swatch { width: 12px; height: 3px; }
 .tooltip .tt-val { margin-left: auto; font-variant-numeric: tabular-nums; padding-left: 10px; }
+.tooltip .tt-note { display: flex; align-items: flex-start; gap: 6px; margin: 3px 0 0; max-width: 230px; color: var(--ink-2); font-size: 12px; }
+.tooltip .tt-note .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; margin-top: 4px; }
 
 .table-view { margin-top: 14px; font-size: 13px; }
 .table-view summary { cursor: pointer; color: var(--ink-2); }

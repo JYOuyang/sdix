@@ -9,6 +9,8 @@
  *   ?s=Upper%20South:KY,TN          a named group (members comma-separated)
  *   &m=additive                     measure (default: mcmc)
  *   &band=1                         ±1 SD band on individual states (MCMC only)
+ *   &hide=1                         hide unselected states (no-op if none selected)
+ *   &notes=1                        event annotations on highlighted lines
  */
 (function () {
   "use strict";
@@ -16,6 +18,7 @@
   const DATA = window.SDI;
   const YEARS = DATA.years;
   const CODES = Object.keys(DATA.states).sort();
+  const NOTES = window.SDI_ANNOTATIONS || {};
 
   // Validated categorical palette (light mode), fixed slot order.
   const PALETTE = ["#2a78d6", "#1baf7a", "#eda100", "#008300", "#4a3aa7", "#e34948", "#e87ba4", "#eb6834"];
@@ -38,6 +41,7 @@
     metric: "mcmc",
     band: false,
     hideOthers: false,
+    notes: false,
     series: [], // {id, type:'state'|'group', label, states:[codes], slot}
     activeGroup: null, // id of the group new chip clicks are routed to
   };
@@ -110,6 +114,7 @@
     state.metric = m === "additive" ? "additive" : "mcmc";
     state.band = p.get("band") === "1";
     state.hideOthers = p.get("hide") === "1";
+    state.notes = p.get("notes") === "1";
     state.series = [];
     for (const raw of p.getAll("s")) {
       if (state.series.length >= MAX_SERIES) break;
@@ -143,6 +148,7 @@
     if (state.metric !== "mcmc") p.set("m", state.metric);
     if (state.band) p.set("band", "1");
     if (state.hideOthers) p.set("hide", "1");
+    if (state.notes) p.set("notes", "1");
     const qs = p.toString();
     try {
       history.replaceState(null, "", qs ? "?" + qs : location.pathname);
@@ -169,6 +175,12 @@
   }
 
   function metricValues(code) { return DATA.states[code][state.metric]; }
+
+  // Annotation notes for a state-year; a value may be one string or an array.
+  function notesFor(code, year) {
+    const n = NOTES[code] && NOTES[code][year];
+    return n == null ? [] : Array.isArray(n) ? n : [n];
+  }
 
   function groupMean(codes) {
     return YEARS.map((_, i) => {
@@ -232,6 +244,7 @@
     band.checked = state.band && METRICS[state.metric].hasSd;
     band.disabled = !METRICS[state.metric].hasSd;
     $("#hide-others").checked = state.hideOthers;
+    $("#show-notes").checked = state.notes;
 
     // state chips
     const grid = $("#state-grid");
@@ -426,6 +439,22 @@
       }
     }
 
+    // --- event annotation dots on highlighted lines (details in the tooltip)
+    if (state.notes) {
+      for (const s of state.series) {
+        for (const code of s.states) {
+          const vals = metricValues(code);
+          for (let i = 0; i < YEARS.length; i++) {
+            if (vals[i] == null || !notesFor(code, YEARS[i]).length) continue;
+            el("circle", {
+              cx: x(YEARS[i]).toFixed(1), cy: y(vals[i]).toFixed(1), r: 4,
+              fill: seriesColor(s), stroke: "#ffffff", "stroke-width": 1.5,
+            }, svg);
+          }
+        }
+      }
+    }
+
     // --- direct labels at the right edge, collision-resolved
     resolveLabels(endLabels, 15, margin.top + 6, margin.top + ph - 2);
     for (const L of endLabels) {
@@ -567,6 +596,20 @@
       row.appendChild(html("span", "tt-val", fmt(r.v)));
       tooltip.appendChild(row);
     }
+    if (state.notes) {
+      for (const s of state.series) {
+        for (const code of s.states) {
+          for (const note of notesFor(code, year)) {
+            const row = html("div", "tt-note");
+            const dot = html("span", "dot");
+            dot.style.background = seriesColor(s);
+            row.appendChild(dot);
+            row.appendChild(html("span", "", code + " — " + note));
+            tooltip.appendChild(row);
+          }
+        }
+      }
+    }
     tooltip.hidden = false;
     const wrapRect = chartWrap.getBoundingClientRect();
     let tx = ev.clientX - wrapRect.left + 14;
@@ -626,6 +669,7 @@
   });
   $("#band").addEventListener("change", (e) => { state.band = e.target.checked; update(); });
   $("#hide-others").addEventListener("change", (e) => { state.hideOthers = e.target.checked; update(); });
+  $("#show-notes").addEventListener("change", (e) => { state.notes = e.target.checked; update(); });
   $("#new-group").addEventListener("click", () => { newGroup(); update(); });
   $("#clear-all").addEventListener("click", () => {
     state.series = []; state.activeGroup = null; update();

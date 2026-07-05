@@ -50,7 +50,7 @@
       <h2>Examples</h2>
       <a href="?s=KY&s=TN">Kentucky vs Tennessee</a>
       <a href="?s=CA&s=NY&hide=1">California vs New York (only)</a>
-      <a href="?s=CA&s=NC&s=TN&s=MI&s=WA">Figure&nbsp;3 states from the report</a>
+      <a href="?s=CA&s=NC&s=TN&s=MI&s=WA">Figure&nbsp;5 from the report</a>
       <a href="?s=New%20England%3ACT%2CMA%2CME%2CNH%2CRI%2CVT&s=Deep%20South%3AAL%2CGA%2CLA%2CMS%2CSC">New England vs Deep South (grouped)</a>
     </section>
 
@@ -58,6 +58,9 @@
       <h2>Measure</h2>
       <label class="check-row check-row-top">
         <input type="checkbox" id="hide-others"> Hide unselected states
+      </label>
+      <label class="check-row check-row-top">
+        <input type="checkbox" id="show-notes"> Show annotations <span class="hint">(state events)</span>
       </label>
       <div class="radio-row" role="radiogroup" aria-label="Measure">
         <label><input type="radio" name="metric" value="mcmc" checked> MCMC index</label>
@@ -87,6 +90,7 @@
 </main>
 
 <script src="data.js"></script>
+<script src="annotations.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
