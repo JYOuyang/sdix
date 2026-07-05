@@ -132,6 +132,11 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .tooltip .tt-val { margin-left: auto; font-variant-numeric: tabular-nums; padding-left: 10px; }
 .tooltip .tt-note { display: flex; align-items: flex-start; gap: 6px; margin: 3px 0 0; max-width: 230px; color: var(--ink-2); font-size: 12px; }
 .tooltip .tt-note .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; margin-top: 4px; }
+.tooltip .tt-note .rule {
+  width: 7px; height: 12px; flex: none; margin-top: 2px;
+  background: repeating-linear-gradient(to bottom, #9a9a9a 0 3px, transparent 3px 5px);
+  background-size: 1px 100%; background-repeat: no-repeat; background-position: center;
+}
 
 .table-view { margin-top: 14px; font-size: 13px; }
 .table-view summary { cursor: pointer; color: var(--ink-2); }

@@ -390,6 +390,17 @@
       el("line", { x1: x(yr), x2: x(yr), y1: margin.top, y2: margin.top + ph, stroke: "#ebebeb", "stroke-width": major ? 1 : 0.5 }, grid);
     }
 
+    // --- federal event rules (reserved "US" key), behind the data
+    if (state.notes) {
+      for (const yr of YEARS) {
+        if (!notesFor("US", yr).length) continue;
+        el("line", {
+          x1: x(yr), x2: x(yr), y1: margin.top, y2: margin.top + ph,
+          stroke: "#9a9a9a", "stroke-width": 1, "stroke-dasharray": "4 3",
+        }, svg);
+      }
+    }
+
     // --- background lines: every state not in a series (unless hidden)
     const highlighted = new Set(state.series.flatMap((s) => s.states));
     const bgGroup = el("g", {}, svg);
@@ -582,7 +593,8 @@
     if (hoveredBg && !seriesForState(hoveredBg)) {
       rows.push({ label: DATA.states[hoveredBg].name + " — click to add", color: "#8a8a8a", v: metricValues(hoveredBg)[yi] });
     }
-    if (!rows.length) { hideTooltip(); return; }
+    const fedNotes = state.notes ? notesFor("US", year) : [];
+    if (!rows.length && !fedNotes.length) { hideTooltip(); return; }
     rows.sort((a, b) => (b.v ?? -Infinity) - (a.v ?? -Infinity));
 
     tooltip.textContent = "";
@@ -594,6 +606,12 @@
       row.appendChild(sw);
       row.appendChild(html("span", "", r.label));
       row.appendChild(html("span", "tt-val", fmt(r.v)));
+      tooltip.appendChild(row);
+    }
+    for (const note of fedNotes) {
+      const row = html("div", "tt-note");
+      row.appendChild(html("span", "rule"));
+      row.appendChild(html("span", "", note));
       tooltip.appendChild(row);
     }
     if (state.notes) {
