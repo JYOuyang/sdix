@@ -144,7 +144,6 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .source { color: var(--muted); font-size: 12px; max-width: 80ch; }
 .source a { color: var(--ink-2); }
 
-/* SVG internals */
-#chart text { font-family: inherit; }
-.crosshair { stroke: rgba(11,11,11,0.35); stroke-width: 1; stroke-dasharray: 3 3; }
-.hit { fill: none; stroke: transparent; stroke-width: 9; cursor: pointer; }
+/* SVG internals: rendering-critical properties live as inline attributes in
+   app.js so a serialized chart is standalone; only UI affordances go here. */
+.hit { cursor: pointer; }

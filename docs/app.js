@@ -21,6 +21,12 @@
   const PALETTE = ["#2a78d6", "#1baf7a", "#eda100", "#008300", "#4a3aa7", "#e34948", "#e87ba4", "#eb6834"];
   const MAX_SERIES = PALETTE.length;
 
+  // Everything drawn inside the SVG uses literal values, never CSS classes or
+  // custom properties, so a serialized chart renders standalone (image export).
+  const BG_LINE = "#d4d4d4";
+  const BG_LINE_HOVER = "#8a8a8a";
+  const CHART_FONT = "Arial, Helvetica, sans-serif";
+
   const METRICS = {
     mcmc: { key: "mcmc", label: "Democracy Index (MCMC)", hasSd: true },
     additive: { key: "additive", label: "Democracy Index (additive)", hasSd: false },
@@ -301,7 +307,7 @@
     }
     const other = html("span", "entry other");
     const key = html("span", "key");
-    key.style.borderTopColor = "var(--bg-line)";
+    key.style.borderTopColor = BG_LINE;
     other.appendChild(key);
     other.appendChild(html("span", "", state.series.length ? "Other states" : "All states"));
     legend.appendChild(other);
@@ -314,6 +320,7 @@
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+    svg.setAttribute("font-family", CHART_FONT);
 
     // Right margin fits the longest end-of-line label (state code or group name).
     const endLabelText = (s) => (s.type === "group" ? truncate(s.label, 16) : s.states[0]);
@@ -368,7 +375,7 @@
       bgPaths[code] = el("path", {
         d: linePath(metricValues(code), x, y),
         fill: "none",
-        stroke: "var(--bg-line)",
+        stroke: BG_LINE,
         "stroke-width": 1.1,
       }, bgGroup);
     }
@@ -439,7 +446,10 @@
     // --- hover layer: invisible fat hit paths for every state line
     const hits = el("g", {}, svg);
     for (const code of CODES) {
-      const p = el("path", { d: linePath(metricValues(code), x, y), class: "hit" }, hits);
+      const p = el("path", {
+        d: linePath(metricValues(code), x, y),
+        class: "hit", fill: "none", stroke: "transparent", "stroke-width": 9,
+      }, hits);
       p.addEventListener("mouseenter", () => { hoveredBg = code; styleBg(code, true); });
       p.addEventListener("mouseleave", () => { hoveredBg = null; styleBg(code, false); });
       p.addEventListener("click", () => toggleState(code));
@@ -450,7 +460,7 @@
   function styleBg(code, on) {
     const p = layout && layout.bgPaths && layout.bgPaths[code];
     if (!p) return;
-    p.setAttribute("stroke", on ? "#8a8a8a" : "var(--bg-line)");
+    p.setAttribute("stroke", on ? BG_LINE_HOVER : BG_LINE);
     p.setAttribute("stroke-width", on ? 1.8 : 1.1);
     if (on) p.parentNode.appendChild(p); // raise above siblings
   }
@@ -511,7 +521,12 @@
 
     // crosshair
     let cross = svg.querySelector(".crosshair");
-    if (!cross) cross = el("line", { class: "crosshair" }, svg);
+    if (!cross) {
+      cross = el("line", {
+        class: "crosshair",
+        stroke: "rgba(11,11,11,0.35)", "stroke-width": 1, "stroke-dasharray": "3 3",
+      }, svg);
+    }
     cross.setAttribute("x1", x(year)); cross.setAttribute("x2", x(year));
     cross.setAttribute("y1", margin.top); cross.setAttribute("y2", margin.top + ph);
 
