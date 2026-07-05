@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Regenerate site/data.js from SDI_2.0.csv.
+"""Regenerate docs/data.js from SDI_2.0.csv.
 
 Run from anywhere; paths are script-relative:
     python3 build_data.py
@@ -10,7 +10,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 SRC = HERE / "SDI_2.0.csv"
-OUT = HERE / "site" / "data.js"
+OUT = HERE / "docs" / "data.js"
 
 
 def main():

@@ -2,7 +2,7 @@
 
 A static, client-side-only explorer for the **State Democracy Index (SDI 2.0)**
 panel (50 states × 2000–2023). No build step, no server, no dependencies —
-plain HTML/CSS/JS with the data baked into `site/data.js`.
+plain HTML/CSS/JS with the data baked into `docs/data.js`.
 
 The data and accompanying papers come from the
 [Democracy Policy Lab](https://democracypolicylab.berkeley.edu/state-democracy-index/)
@@ -12,11 +12,11 @@ at UC Berkeley.
 
 | Path | Purpose |
 |---|---|
-| `site/` | the deployable website, self-contained |
-| `SDI_2.0.csv` | state-level index scores (source of `site/data.js`) |
+| `docs/` | the deployable website, self-contained (served by GitHub Pages) |
+| `SDI_2.0.csv` | state-level index scores (source of `docs/data.js`) |
 | `SDI_2.0_item_data.csv` | item-level source data |
 | `variables_list.csv` | variable descriptions |
-| `build_data.py` | regenerates `site/data.js` from `SDI_2.0.csv` |
+| `build_data.py` | regenerates `docs/data.js` from `SDI_2.0.csv` |
 
 ## Features
 
@@ -40,13 +40,13 @@ at UC Berkeley.
 ## Local preview
 
 ```sh
-python3 -m http.server -d site
+python3 -m http.server -d docs
 # open http://localhost:8000/?s=KY&s=TN
 ```
 
 ## Updating the data
 
-`site/data.js` is generated — never edit it by hand:
+`docs/data.js` is generated — never edit it by hand:
 
 ```sh
 python3 build_data.py
@@ -56,11 +56,9 @@ Re-run it whenever `SDI_2.0.csv` changes, then commit the regenerated file.
 
 ## Deploying to GitHub Pages
 
-GitHub's "deploy from a branch" mode only serves `/ (root)` or `/docs`, so to
-keep the site in `site/`, deploy with the official Pages actions instead:
+The website lives in `docs/` so the native branch deploy serves it directly:
 
-1. Repo → Settings → Pages → Source: **GitHub Actions**.
-2. Add a workflow (`.github/workflows/pages.yml`) that uploads `site/` as the
-   Pages artifact via `actions/upload-pages-artifact` + `actions/deploy-pages`.
+1. Repo → Settings → Pages → Source: **Deploy from a branch**.
+2. Branch `main`, folder `/docs`.
 
-Every push to `main` then publishes `site/` as-is.
+Every push to `main` then publishes `docs/` as-is.
