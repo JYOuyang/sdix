@@ -1,5 +1,8 @@
 # SDI 2.0 Explorer
 
+**Live at <https://jyouyang.github.io/sdix/>** — try
+[Kentucky vs Tennessee](https://jyouyang.github.io/sdix/?s=KY&s=TN).
+
 A static, client-side-only explorer for the **State Democracy Index (SDI 2.0)**
 panel (50 states × 2000–2023). No build step, no server, no dependencies —
 plain HTML/CSS/JS with the data baked into `docs/data.js`.
