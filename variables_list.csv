@@ -1,0 +1,67 @@
+variable,direction,description,paper_area,democracy_area,area,collector,long_description,years_complete,url,url2
+econ_opinion_residual,-,Opinion-policy difference (economic),Electoral,Representation,Responsiveness,Caughey and Warshaw 2018,Squared difference in mass econ liberalism and econ policy liberalism,,,
+social_opinion_residual,-,Opinion-policy difference (social),Electoral,Representation,Responsiveness,Caughey and Warshaw 2018,Squared difference in mass social liberalism and social policy liberalism,,,
+website_pollingplace,+,website with polling place,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+website_reg_status,+,website for registration status,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+website_precinct_ballot,+,website for precinct ballot,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+website_absentee_status,+,website for absentee status,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+website_provisional_status,+,website for provisional ballot check,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+reg_rej,-,registrations rejected,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+prov_partic,-,provisional ballots cast,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+prov_rej_all,-,provisional ballots rejected,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+uocava_rej,-,military and overseas ballots rejected,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+uocava_nonret,-,military and overseas ballots not returned,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+eavs_completeness,+,data completeness,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+post_election_audit,+,postelection audit required,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+nonvoter_illness_onyear_pct,-,voters deterred because of disability or illness (on-year),Electoral,Electoral,Election Performance,Elections Performance Index,degree to which voters are deterred from voting because of disability or illness,,,
+nonvoter_illness_offyear_pct,-,voters deterred because of disability or illness (off-year),Electoral,Electoral,Election Performance,Elections Performance Index,degree to which voters are deterred from voting because of disability or illness,,,
+nonvoter_reg_onyear_pct,-,registration or absentee ballot problems (on-year),Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+nonvoter_reg_offyear_pct,-,registration or absentee ballot problems (off-year),Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+online_reg,+,online registration,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+wait,-,voting wait times,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+residual,-,under- and over-votes cast in an election,Electoral,Electoral,Election Performance,Elections Performance Index,"number of under- and over-votes cast in an election, as a percentage of voter turnout.",,,
+pct_reg_of_vep_vrs,+,percent of eligible voters who register,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+risk_limiting_audit,+,states require a risk-limiting audit to be conducted following an election.,Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+eric_membership,+,state joined Electronic Registration Information Center (ERIC),Electoral,Electoral,Election Performance,Elections Performance Index,,,,
+nofelons,-,number of felons ineligible to vote as percent of state population,Electoral,Electoral,Voting Rights,Grossmann and Jordan,,,,
+w_felon_disenfranchise_new,-,felony disenfranchisement,Electoral,Electoral,Voting Rights,"2002: https://as.nyu.edu/content/dam/nyu-as/sociology/documents/manza-publications/perspectives.pdf 
+
+2014: https://www.prisonpolicy.org/scans/sp/Felony-Disenfranchisement-Laws-in-the-US.pdf 
+
+2018: https://www.sentencingproject.org/app/uploads/2022/08/Expanding-the-Vote-1997-2018.pdf 
+
+2021: https://www.sentencingproject.org/app/uploads/2022/08/Voting-Rights-in-the-Era-of-Mass-Incarceration-A-Primer.pdf 
+
+2023: https://www.sentencingproject.org/app/uploads/2023/07/Increasing-Public-Safety-by-Restoring-Voting-Rights.pdf ","None = 0
+Prison Only = 0
+Prison and Parole = 1
+Prison, Parole, Probation = 1 
+Prison, Parole, Probation, and Post-Sentence = 2 (some or all i.e ppl who lose their right to vote for certain offenses)",,,
+absvot,+,absentee voting,Electoral,Electoral,Voting Rights,Grossmann and Jordan,,,,
+earlvot,+,early voting,Electoral,Electoral,Voting Rights,Grossmann and Jordan,,,,
+voterid_photo,-,voter ID (strict),Electoral,Electoral,Voting Rights,Grumbach 2018,,,,
+voterid_any_new,-,voter ID (any),Electoral,Electoral,Voting Rights,Grumbach 2018,,,,
+sdr,+,Same day registration,Electoral,Electoral,Voting Rights,Grumbach and Hill 2018,,,,
+avr_any,+,Automatic Voter Registration (any),Electoral,Electoral,Voting Rights,Grumbach and Hill 2018,,,,
+avr_backend,+,Automatic Voter Registration (back end),Electoral,Electoral,Voting Rights,"McGhee, Hill, and Romero 2021",,,,
+compactness,+,District compactness,Electoral,Electoral,Gerrymandering,"Kaufman, King, and Komisarchik 2019",,,,
+prisoner_vote,+,State allows currently incarcerated to vote,Electoral,Electoral,Election Performance,National Conference of State Legislatures,,,http://www.ncsl.org/research/elections-and-campaigns/felon-voting-rights.aspx,
+youth_preregistration,+,Youth preregistration,Electoral,Electoral,Voting Rights,,"following Cost of Voting Index: 0=none, 1=<.5 year, 2=.5 year, 3=1 year, 4=2 years",,http://www.ncsl.org/research/elections-and-campaigns/preregistration-for-young-voters.aspx,https://www.acslaw.org/wp-content/uploads/2018/05/Registration-general-1.pdf
+registration_drive_restriction,-,Restrictions on voter reg. drives,Electoral,Electoral,Voting Rights,,Interval: mandatory training; reporting penalties; deadline penalties,,https://www.brennancenter.org/sites/default/files/2019-08/ReportState%20Restrictions%20on%20Voter%20Registration%20Drives.pdf,
+mean_median_sh,-,Gerrymandering: mean-median difference (state leg.),Electoral,Electoral,Gerrymandering,,,,,
+symmetry_sh,-,Gerrymandering: partisan symmetry (state leg.),Electoral,Electoral,Gerrymandering,,,,,
+EG_sh,-,Gerrymandering: Efficiency gap (state leg.),Electoral,Electoral,Gerrymandering,,,,,
+declination2_sh,-,Gerrymandering: declination (state leg.),Electoral,Electoral,Gerrymandering,,,,,
+declination2_c,-,Gerrymandering: declination (Cong.),Electoral,Electoral,Gerrymandering,,,,,
+mean_median_pres_sh,-,Gerrymandering: mean-median difference (state leg.-pres.),Electoral,Electoral,Gerrymandering,,,,,
+declination2_pres_sh,-,Gerrymandering: declination (state leg.-pres.),Electoral,Electoral,Gerrymandering,,,,,
+symmetry_pres_sh,-,Gerrymandering: partisan symmetry (state leg.-pres.),Electoral,Electoral,Gerrymandering,,,,,
+mean_median_c,-,Gerrymandering: mean-median difference (Cong.),Electoral,Electoral,Gerrymandering,,,,,
+symmetry_c,-,Gerrymandering: partisan symmetry (Cong.),Electoral,Electoral,Gerrymandering,,,,,
+mean_median_pres_c,-,Gerrymandering: mean-median difference (Cong.-Pres.),Electoral,Electoral,Gerrymandering,,,,,
+declination2_pres_c,-,Gerrymandering: declination (Cong.-Pres.),Electoral,Electoral,Gerrymandering,,,,,
+symmetry_pres_c,-,Gerrymandering: partisan symmetry (Cong.-Pres.),Electoral,Electoral,Gerrymandering,,,,,
+EG_ss,-,,Electoral,Electoral,Gerrymandering,,,,,
+mean_median_ss,-,,Electoral,Electoral,Gerrymandering,,,,,
+symmetry_ss,-,,Electoral,Electoral,Gerrymandering,,,,,
+declination2_ss,-,,Electoral,Electoral,Gerrymandering,,,,,

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SDI 2.0 Explorer — State Democracy Index</title>
+<meta name="description" content="Interactive explorer for the State Democracy Index (SDI 2.0), 2000–2023. Highlight and compare states; share views by URL.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <div>
+    <h1>State Democracy Index <span class="version">SDI&nbsp;2.0</span></h1>
+    <p class="subtitle">Democratic performance of the 50 US states, 2000–2023.
+      Click states to highlight them; group states to compare them as a set.
+      The URL updates as you go — copy it to share exactly what you see.</p>
+  </div>
+  <div class="header-actions">
+    <button id="copy-link" class="btn" type="button" title="Copy a shareable link to this view">Copy link</button>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="controls" aria-label="Chart controls">
+    <section class="control-block">
+      <h2>Measure</h2>
+      <div class="radio-row" role="radiogroup" aria-label="Measure">
+        <label><input type="radio" name="metric" value="mcmc" checked> MCMC index</label>
+        <label><input type="radio" name="metric" value="additive"> Additive index</label>
+      </div>
+      <label class="check-row" id="band-row">
+        <input type="checkbox" id="band"> Show ±1 SD band <span class="hint">(MCMC only)</span>
+      </label>
+    </section>
+
+    <section class="control-block">
+      <div class="block-head">
+        <h2>Highlighted</h2>
+        <span class="head-btns">
+          <button id="new-group" class="btn small" type="button">+ Group</button>
+          <button id="clear-all" class="btn small" type="button">Clear</button>
+        </span>
+      </div>
+      <ul id="series-list" class="series-list" aria-live="polite"></ul>
+      <p id="series-hint" class="hint"></p>
+    </section>
+
+    <section class="control-block">
+      <h2>States</h2>
+      <div id="state-grid" class="state-grid" role="group" aria-label="Toggle states"></div>
+    </section>
+
+    <section class="control-block examples">
+      <h2>Examples</h2>
+      <a href="?s=KY&s=TN">Kentucky vs Tennessee</a>
+      <a href="?s=CA&s=NC&s=TN&s=MI&s=WA">Figure&nbsp;3 states from the report</a>
+      <a href="?s=New%20England%3ACT%2CMA%2CME%2CNH%2CRI%2CVT&s=Deep%20South%3AAL%2CGA%2CLA%2CMS%2CSC">New England vs Deep South (grouped)</a>
+    </section>
+  </aside>
+
+  <section class="chart-area">
+    <div id="legend" class="legend" aria-hidden="true"></div>
+    <div id="chart-wrap" class="chart-wrap">
+      <svg id="chart" role="img" aria-label="Line chart of state democracy index by year"></svg>
+      <div id="tooltip" class="tooltip" hidden></div>
+    </div>
+    <details class="table-view">
+      <summary>Data table</summary>
+      <div id="table-wrap" class="table-wrap"></div>
+    </details>
+    <p class="source">Source: Grumbach, <em>State Democracy Index 2.0</em> (2000–2023 panel).
+      MCMC index: Bayesian latent-variable estimate; additive index: standardized sum of items.
+      Higher values indicate more democratic performance.</p>
+  </section>
+</main>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
