@@ -37,6 +37,7 @@
   const state = {
     metric: "mcmc",
     band: false,
+    hideOthers: false,
     series: [], // {id, type:'state'|'group', label, states:[codes], slot}
     activeGroup: null, // id of the group new chip clicks are routed to
   };
@@ -108,6 +109,7 @@
     const m = p.get("m");
     state.metric = m === "additive" ? "additive" : "mcmc";
     state.band = p.get("band") === "1";
+    state.hideOthers = p.get("hide") === "1";
     state.series = [];
     for (const raw of p.getAll("s")) {
       if (state.series.length >= MAX_SERIES) break;
@@ -140,6 +142,7 @@
     }
     if (state.metric !== "mcmc") p.set("m", state.metric);
     if (state.band) p.set("band", "1");
+    if (state.hideOthers) p.set("hide", "1");
     const qs = p.toString();
     try {
       history.replaceState(null, "", qs ? "?" + qs : location.pathname);
@@ -228,6 +231,7 @@
     const band = $("#band");
     band.checked = state.band && METRICS[state.metric].hasSd;
     band.disabled = !METRICS[state.metric].hasSd;
+    $("#hide-others").checked = state.hideOthers;
 
     // state chips
     const grid = $("#state-grid");
@@ -294,6 +298,12 @@
     $("#series-hint").textContent = defaultHint();
   }
 
+  // "Hide unselected" only bites when there is a selection — a bare ?hide=1
+  // link should not render an empty panel.
+  function othersHidden() {
+    return state.hideOthers && state.series.length > 0;
+  }
+
   function renderLegend() {
     const legend = $("#legend");
     legend.textContent = "";
@@ -305,6 +315,7 @@
       e.appendChild(html("span", "", s.type === "group" ? s.label + " (mean)" : s.label));
       legend.appendChild(e);
     }
+    if (othersHidden()) return;
     const other = html("span", "entry other");
     const key = html("span", "key");
     key.style.borderTopColor = BG_LINE;
@@ -366,18 +377,20 @@
       el("line", { x1: x(yr), x2: x(yr), y1: margin.top, y2: margin.top + ph, stroke: "#ebebeb", "stroke-width": major ? 1 : 0.5 }, grid);
     }
 
-    // --- background lines: every state not in a series
+    // --- background lines: every state not in a series (unless hidden)
     const highlighted = new Set(state.series.flatMap((s) => s.states));
     const bgGroup = el("g", {}, svg);
     const bgPaths = {};
-    for (const code of CODES) {
-      if (highlighted.has(code)) continue;
-      bgPaths[code] = el("path", {
-        d: linePath(metricValues(code), x, y),
-        fill: "none",
-        stroke: BG_LINE,
-        "stroke-width": 1.1,
-      }, bgGroup);
+    if (!othersHidden()) {
+      for (const code of CODES) {
+        if (highlighted.has(code)) continue;
+        bgPaths[code] = el("path", {
+          d: linePath(metricValues(code), x, y),
+          fill: "none",
+          stroke: BG_LINE,
+          "stroke-width": 1.1,
+        }, bgGroup);
+      }
     }
     layout.bgPaths = bgPaths;
 
@@ -443,9 +456,10 @@
     }, svg);
     yTitle.textContent = METRICS[state.metric].label;
 
-    // --- hover layer: invisible fat hit paths for every state line
+    // --- hover layer: invisible fat hit paths for every painted state line
     const hits = el("g", {}, svg);
     for (const code of CODES) {
+      if (othersHidden() && !highlighted.has(code)) continue;
       const p = el("path", {
         d: linePath(metricValues(code), x, y),
         class: "hit", fill: "none", stroke: "transparent", "stroke-width": 9,
@@ -611,6 +625,7 @@
     });
   });
   $("#band").addEventListener("change", (e) => { state.band = e.target.checked; update(); });
+  $("#hide-others").addEventListener("change", (e) => { state.hideOthers = e.target.checked; update(); });
   $("#new-group").addEventListener("click", () => { newGroup(); update(); });
   $("#clear-all").addEventListener("click", () => {
     state.series = []; state.activeGroup = null; update();

@@ -41,6 +41,7 @@ whose figures this explorer's charts follow.
 | `?s=New%20England:CT,MA,ME,NH,RI,VT&s=Deep%20South:AL,GA,LA,MS,SC` | two named groups with mean lines |
 | `&m=additive` | additive index instead of MCMC |
 | `&band=1` | ±1 SD band (MCMC only) |
+| `&hide=1` | hide unselected states entirely (no-op without a selection) |
 
 ## Local preview
 
