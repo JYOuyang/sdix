@@ -6,7 +6,9 @@ plain HTML/CSS/JS with the data baked into `docs/data.js`.
 
 The data and accompanying papers come from the
 [Democracy Policy Lab](https://democracypolicylab.berkeley.edu/state-democracy-index/)
-at UC Berkeley.
+at UC Berkeley; see in particular the
+[SDI 2.0 report](https://democracypolicylab.berkeley.edu/wp-content/uploads/2024/12/SDI-2.0-Report.pdf) (PDF),
+whose figures this explorer's charts follow.
 
 ## Repo layout
 
