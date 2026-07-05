@@ -64,6 +64,7 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 
 .radio-row { display: flex; flex-direction: column; gap: 4px; font-size: 13.5px; }
 .check-row { display: block; margin-top: 8px; font-size: 13.5px; }
+.check-row-top { margin: 0 0 10px; }
 .check-row input:disabled + span, .check-row:has(input:disabled) { color: var(--muted); }
 .hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
 
