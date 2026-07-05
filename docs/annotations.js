@@ -34,8 +34,16 @@ window.SDI_ANNOTATIONS = {
   WI: {
     2011: "Act 23 voter-ID law enacted",
   },
+  FL: {
+    2011: "HB 1355 cuts early voting to 8 days and restricts registration drives",
+  },
   GA: {
+    2011: "HB 92 cuts early voting from 45 to 21 days",
     2021: "SB 202 election overhaul",
+  },
+  OH: {
+    2011: "HB 194 cuts early voting, ends 'golden week' same-day registration (repealed 2012 under referendum threat)",
+    2014: "SB 238 eliminates 'golden week' for good",
   },
   TX: {
     2021: "SB 1 tightens voting rules",
