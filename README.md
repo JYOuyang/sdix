@@ -2,7 +2,17 @@
 
 A static, client-side-only explorer for the **State Democracy Index (SDI 2.0)**
 panel (50 states × 2000–2023). No build step, no server, no dependencies —
-plain HTML/CSS/JS with the data baked into `data.js`.
+plain HTML/CSS/JS with the data baked into `site/data.js`.
+
+## Repo layout
+
+| Path | Purpose |
+|---|---|
+| `site/` | the deployable website, self-contained |
+| `SDI_2.0.csv` | state-level index scores (source of `site/data.js`) |
+| `SDI_2.0_item_data.csv` | item-level source data |
+| `variables_list.csv` | variable descriptions |
+| `build_data.py` | regenerates `site/data.js` from `SDI_2.0.csv` |
 
 ## Features
 
@@ -23,39 +33,30 @@ plain HTML/CSS/JS with the data baked into `data.js`.
 | `&m=additive` | additive index instead of MCMC |
 | `&band=1` | ±1 SD band (MCMC only) |
 
-## Deploying to GitHub Pages
+## Local preview
 
-The `site/` directory is self-contained. Two common setups:
-
-**Option A — serve the repo's `/docs` folder**
-
-1. Rename (or copy) `site/` to `docs/` at the repo root.
-2. Push to GitHub.
-3. Repo → Settings → Pages → "Deploy from a branch" → branch `main`, folder `/docs`.
-
-**Option B — dedicated repo**
-
-1. Make `site/` its own repo (its contents at the root).
-2. Settings → Pages → deploy from branch `main`, folder `/ (root)`.
-
-No Actions workflow needed either way.
+```sh
+python3 -m http.server -d site
+# open http://localhost:8000/?s=KY&s=TN
+```
 
 ## Updating the data
 
-`data.js` is generated from `../SDI_2.0.csv`:
+`site/data.js` is generated — never edit it by hand:
 
 ```sh
 python3 build_data.py
 ```
 
-Re-run it whenever the CSV changes, then commit the regenerated `data.js`.
+Re-run it whenever `SDI_2.0.csv` changes, then commit the regenerated file.
 
-## Files
+## Deploying to GitHub Pages
 
-| File | Purpose |
-|---|---|
-| `index.html` | page shell and controls |
-| `style.css` | page chrome + theme_bw chart tokens |
-| `app.js` | state model, URL codec, SVG chart renderer |
-| `data.js` | generated data (do not edit by hand) |
-| `build_data.py` | regenerates `data.js` from the CSV |
+GitHub's "deploy from a branch" mode only serves `/ (root)` or `/docs`, so to
+keep the site in `site/`, deploy with the official Pages actions instead:
+
+1. Repo → Settings → Pages → Source: **GitHub Actions**.
+2. Add a workflow (`.github/workflows/pages.yml`) that uploads `site/` as the
+   Pages artifact via `actions/upload-pages-artifact` + `actions/deploy-pages`.
+
+Every push to `main` then publishes `site/` as-is.

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Regenerate data.js from ../SDI_2.0.csv.
+"""Regenerate site/data.js from SDI_2.0.csv.
 
-Run from the site/ directory (or anywhere; paths are script-relative):
+Run from anywhere; paths are script-relative:
     python3 build_data.py
 """
 import csv
@@ -9,8 +9,8 @@ import json
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "..", "SDI_2.0.csv")
-OUT = os.path.join(HERE, "data.js")
+SRC = os.path.join(HERE, "SDI_2.0.csv")
+OUT = os.path.join(HERE, "site", "data.js")
 
 
 def main():
