@@ -139,6 +139,7 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .table-wrap th:first-child, .table-wrap td:first-child { text-align: left; }
 
 .source { color: var(--muted); font-size: 12px; max-width: 80ch; }
+.source a { color: var(--ink-2); }
 
 /* SVG internals */
 #chart text { font-family: inherit; }

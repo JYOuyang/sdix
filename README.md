@@ -4,6 +4,10 @@ A static, client-side-only explorer for the **State Democracy Index (SDI 2.0)**
 panel (50 states × 2000–2023). No build step, no server, no dependencies —
 plain HTML/CSS/JS with the data baked into `site/data.js`.
 
+The data and accompanying papers come from the
+[Democracy Policy Lab](https://democracypolicylab.berkeley.edu/state-democracy-index/)
+at UC Berkeley.
+
 ## Repo layout
 
 | Path | Purpose |
