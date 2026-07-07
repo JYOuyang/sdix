@@ -338,9 +338,18 @@
   }
 
   function renderChart() {
-    svg.textContent = "";
     const width = Math.max(chartWrap.clientWidth - 12, 320);
     const height = Math.max(Math.min(width * 0.56, 560), 340);
+    layout = drawChart(svg, width, height, false);
+  }
+
+  // Draw the chart into `svg` — deliberately shadows the page element, since
+  // the export path passes an offscreen SVG instead. Interactive mode wires
+  // the hover hit paths and returns the geometry the pointer handlers use;
+  // export mode adds an in-SVG title, legend, and caption so the serialized
+  // image stands alone.
+  function drawChart(svg, width, height, forExport) {
+    svg.textContent = "";
     svg.setAttribute("width", width);
     svg.setAttribute("height", height);
     svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
@@ -350,6 +359,14 @@
     const endLabelText = (s) => (s.type === "group" ? truncate(s.label, 16) : s.states[0]);
     const maxLabelLen = Math.max(2, ...state.series.map((s) => endLabelText(s).length));
     const margin = { top: 12, right: Math.min(24 + maxLabelLen * 7.2, 150), bottom: 34, left: 58 };
+
+    let header = null;
+    if (forExport) {
+      el("rect", { x: 0, y: 0, width, height, fill: "#ffffff" }, svg);
+      header = layoutExportHeader(width - margin.left - margin.right);
+      margin.top = header.height;
+      margin.bottom += 20; // caption line under the x axis
+    }
     const pw = width - margin.left - margin.right;
     const ph = height - margin.top - margin.bottom;
 
@@ -372,7 +389,7 @@
 
     const x = (year) => margin.left + ((year - YEARS[0]) / (YEARS[YEARS.length - 1] - YEARS[0])) * pw;
     const y = (v) => margin.top + (1 - (v - lo) / (hi - lo)) * ph;
-    layout = { margin, pw, ph, x, y, width, height };
+    const geom = { margin, pw, ph, x, y, width, height };
 
     // --- theme_bw panel: white, grey92 grid (minor thinner), grey20 border
     el("rect", { x: margin.left, y: margin.top, width: pw, height: ph, fill: "#ffffff" }, svg);
@@ -416,7 +433,7 @@
         }, bgGroup);
       }
     }
-    layout.bgPaths = bgPaths;
+    geom.bgPaths = bgPaths;
 
     // --- SD bands (individual highlighted states, MCMC only)
     if (bandOn) {
@@ -497,17 +514,62 @@
     yTitle.textContent = METRICS[state.metric].label;
 
     // --- hover layer: invisible fat hit paths for every painted state line
-    const hits = el("g", {}, svg);
-    for (const code of CODES) {
-      if (othersHidden() && !highlighted.has(code)) continue;
-      const p = el("path", {
-        d: linePath(metricValues(code), x, y),
-        class: "hit", fill: "none", stroke: "transparent", "stroke-width": 9,
-      }, hits);
-      p.addEventListener("mouseenter", () => { hoveredBg = code; styleBg(code, true); });
-      p.addEventListener("mouseleave", () => { hoveredBg = null; styleBg(code, false); });
-      p.addEventListener("click", () => toggleState(code));
+    if (!forExport) {
+      const hits = el("g", {}, svg);
+      for (const code of CODES) {
+        if (othersHidden() && !highlighted.has(code)) continue;
+        const p = el("path", {
+          d: linePath(metricValues(code), x, y),
+          class: "hit", fill: "none", stroke: "transparent", "stroke-width": 9,
+        }, hits);
+        p.addEventListener("mouseenter", () => { hoveredBg = code; styleBg(code, true); });
+        p.addEventListener("mouseleave", () => { hoveredBg = null; styleBg(code, false); });
+        p.addEventListener("click", () => toggleState(code));
+      }
     }
+
+    // --- export chrome: title, in-SVG legend, source caption
+    if (forExport) {
+      el("text", { x: margin.left, y: 24, fill: "#0b0b0b", "font-size": 15, "font-weight": 700 }, svg)
+        .textContent = header.title;
+      for (const it of header.entries) {
+        el("line", {
+          x1: margin.left + it.x, x2: margin.left + it.x + 22, y1: it.y - 4, y2: it.y - 4,
+          stroke: it.color, "stroke-width": it.weight,
+        }, svg);
+        el("text", { x: margin.left + it.x + 28, y: it.y, fill: it.muted ? "#52514e" : "#0b0b0b", "font-size": 12 }, svg)
+          .textContent = it.label;
+      }
+      el("text", { x: margin.left, y: height - 8, fill: "#898781", "font-size": 10.5 }, svg)
+        .textContent = "jyouyang.github.io/sdix · State Democracy Index 2.0, Democracy Policy Lab";
+    }
+
+    return geom;
+  }
+
+  // Title + legend geometry for the exported image, mirroring the HTML
+  // legend. Text width is estimated (an unmounted SVG can't be measured):
+  // ~6.2px per character at font-size 12.
+  function layoutExportHeader(availWidth) {
+    const entries = state.series.map((s) => ({
+      label: s.type === "group" ? s.label + " (mean)" : s.label,
+      color: seriesColor(s), weight: 3,
+    }));
+    if (!othersHidden()) {
+      entries.push({ label: state.series.length ? "Other states" : "All states", color: BG_LINE, weight: 1.5, muted: true });
+    }
+    const title = truncate(
+      state.series.length ? state.series.map((s) => s.label).join(" vs ") : "The 50 US states",
+      Math.max(20, Math.floor(availWidth / 8.5)),
+    );
+    let x = 0, y = 46; // title baseline sits at 24; first legend row at 46
+    for (const it of entries) {
+      const w = 28 + it.label.length * 6.2 + 20;
+      if (x > 0 && x + w > availWidth) { x = 0; y += 19; }
+      it.x = x; it.y = y;
+      x += w;
+    }
+    return { title, entries, height: y + 14 };
   }
 
   // Emphasize/reset a background line in place — no chart rebuild on hover.
@@ -692,6 +754,60 @@
   $("#clear-all").addEventListener("click", () => {
     state.series = []; state.activeGroup = null; update();
   });
+  // --------------------------------------------------------- image export
+
+  const EXPORT_W = 1200, EXPORT_H = 675, EXPORT_SCALE = 2;
+
+  // Canonical-size offscreen render → serialized SVG → <img> → canvas → PNG.
+  // Independent of viewport and hover state by construction.
+  function exportPngBlob() {
+    const off = document.createElementNS(svgNS, "svg");
+    drawChart(off, EXPORT_W, EXPORT_H, true);
+    const xml = new XMLSerializer().serializeToString(off);
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = EXPORT_W * EXPORT_SCALE;
+        canvas.height = EXPORT_H * EXPORT_SCALE;
+        const ctx = canvas.getContext("2d");
+        ctx.scale(EXPORT_SCALE, EXPORT_SCALE);
+        ctx.drawImage(img, 0, 0);
+        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("toBlob failed"))), "image/png");
+      };
+      img.onerror = () => reject(new Error("could not rasterize chart SVG"));
+      img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(xml);
+    });
+  }
+  // Hook for the build-time og:image script (headless Chrome; see TODO).
+  window.SDI_EXPORT_PNG = exportPngBlob;
+
+  $("#copy-image").addEventListener("click", async () => {
+    const btn = $("#copy-image");
+    // Safari requires the ClipboardItem to be constructed synchronously in
+    // the click handler, so hand it the blob as a promise.
+    const blob = exportPngBlob();
+    let outcome = "Copied ✓";
+    try {
+      if (!navigator.clipboard || !window.ClipboardItem) throw new Error("no clipboard");
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+    } catch {
+      try {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(await blob);
+        a.download = "sdi-explorer.png";
+        a.click();
+        setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+        outcome = "Downloaded ✓";
+      } catch {
+        outcome = "Export failed";
+      }
+    }
+    btn.textContent = outcome;
+    btn.classList.toggle("copied", outcome !== "Export failed");
+    setTimeout(() => { btn.textContent = "Copy image"; btn.classList.remove("copied"); }, 1600);
+  });
+
   $("#copy-link").addEventListener("click", async () => {
     const btn = $("#copy-link");
     try {
