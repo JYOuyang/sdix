@@ -540,8 +540,13 @@
         el("text", { x: margin.left + it.x + 28, y: it.y, fill: it.muted ? "#52514e" : "#0b0b0b", "font-size": 12 }, svg)
           .textContent = it.label;
       }
+      // Caption URL mirrors wherever the page is served from, so nothing
+      // goes stale on a future move; file:// previews drop the URL part.
+      const site = /^https?:$/.test(location.protocol)
+        ? location.host + location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "")
+        : "";
       el("text", { x: margin.left, y: height - 8, fill: "#898781", "font-size": 10.5 }, svg)
-        .textContent = "jyouyang.github.io/sdix · State Democracy Index 2.0, Democracy Policy Lab";
+        .textContent = (site ? site + " · " : "") + "State Democracy Index 2.0, Democracy Policy Lab";
     }
 
     return geom;
