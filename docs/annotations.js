@@ -36,6 +36,12 @@ window.SDI_ANNOTATIONS = {
   },
   FL: {
     2011: "HB 1355 cuts early voting to 8 days and restricts registration drives",
+    2018: "Amendment 4 restores voting rights to ~1.4M people with felony convictions",
+    2019: "SB 7066 conditions Amendment 4 rights on paying fines and fees",
+  },
+  IA: {
+    2011: "Gov. Branstad's executive order ends automatic felon rights restoration",
+    2020: "Gov. Reynolds' executive order restores voting rights after sentence completion",
   },
   GA: {
     2011: "HB 92 cuts early voting from 45 to 21 days",
@@ -44,6 +50,10 @@ window.SDI_ANNOTATIONS = {
   OH: {
     2011: "HB 194 cuts early voting, ends 'golden week' same-day registration (repealed 2012 under referendum threat)",
     2014: "SB 238 eliminates 'golden week' for good",
+    2023: "HB 458 strict photo voter-ID law takes effect",
+  },
+  OR: {
+    2016: "First-in-nation automatic voter registration ('Oregon Motor Voter') goes live",
   },
   TX: {
     2021: "SB 1 tightens voting rules",
