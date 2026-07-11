@@ -212,7 +212,7 @@
     const h = $("#series-hint");
     h.textContent = msg;
     clearTimeout(hintTimer);
-    hintTimer = setTimeout(() => { h.textContent = defaultHint(); }, 4000);
+    hintTimer = setTimeout(() => { hintTimer = null; h.textContent = defaultHint(); }, 4000);
   }
 
   function defaultHint() {
@@ -246,7 +246,9 @@
     $("#hide-others").checked = state.hideOthers;
     $("#show-notes").checked = state.notes;
 
-    // state chips
+    // state chips; at the cap, unowned chips are muted but stay clickable so
+    // the click still lands in toggleState and flashes the explanation
+    const atCap = freeSlot() < 0 && !state.activeGroup;
     const grid = $("#state-grid");
     grid.textContent = "";
     for (const code of CODES) {
@@ -257,6 +259,10 @@
       if (owner) {
         b.classList.add("on");
         b.style.background = seriesColor(owner);
+      } else if (atCap) {
+        b.classList.add("capped");
+        b.setAttribute("aria-disabled", "true");
+        b.title = DATA.states[code].name + " — all " + MAX_SERIES + " colors are in use";
       }
       b.addEventListener("click", () => toggleState(code));
       grid.appendChild(b);
@@ -308,7 +314,7 @@
       }
       list.appendChild(li);
     }
-    $("#series-hint").textContent = defaultHint();
+    if (hintTimer == null) $("#series-hint").textContent = defaultHint();
   }
 
   // "Hide unselected" only bites when there is a selection — a bare ?hide=1
