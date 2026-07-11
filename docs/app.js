@@ -119,7 +119,7 @@
     for (const raw of p.getAll("s")) {
       if (state.series.length >= MAX_SERIES) break;
       const colon = raw.indexOf(":");
-      const label = colon >= 0 ? raw.slice(0, colon).trim() : "";
+      const label = colon >= 0 ? cleanLabel(raw.slice(0, colon)) : "";
       const codes = (colon >= 0 ? raw.slice(colon + 1) : raw)
         .split(",").map((c) => c.trim().toUpperCase())
         .filter((c) => DATA.states[c] && !seriesForState(c));
@@ -141,9 +141,7 @@
   function writeUrl() {
     const p = new URLSearchParams();
     for (const s of state.series) {
-      // ':' and ',' are the URL codec's delimiters — swap them out of labels.
-      const safeLabel = s.label.replace(/[:,]/g, " ").replace(/\s+/g, " ").trim();
-      p.append("s", s.type === "group" ? safeLabel + ":" + s.states.join(",") : s.states[0]);
+      p.append("s", s.type === "group" ? s.label + ":" + s.states.join(",") : s.states[0]);
     }
     if (state.metric !== "mcmc") p.set("m", state.metric);
     if (state.band) p.set("band", "1");
@@ -206,6 +204,13 @@
   function fmt(v) { return v == null ? "—" : v.toFixed(2); }
 
   function truncate(s, n) { return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+
+  // ':' and ',' are the URL codec's delimiters. Labels are cleaned at their
+  // two entry points (group rename, URL parse) so a serialized view always
+  // round-trips verbatim — writeUrl can embed labels as-is.
+  function cleanLabel(s) {
+    return s.replace(/[:,]/g, " ").replace(/\s+/g, " ").trim();
+  }
 
   let hintTimer = null;
   function flashHint(msg) {
@@ -290,7 +295,11 @@
         const input = document.createElement("input");
         input.value = s.label;
         input.setAttribute("aria-label", "Group name");
-        input.addEventListener("change", () => { s.label = input.value.trim() || s.label; update(); });
+        input.addEventListener("change", () => {
+          if (/[:,]/.test(input.value)) flashHint('":" and "," can\'t be used in group names — the share URL needs them — so they were removed.');
+          s.label = cleanLabel(input.value) || s.label;
+          update();
+        });
         input.addEventListener("click", (e) => e.stopPropagation());
         labelWrap.appendChild(input);
       } else {
