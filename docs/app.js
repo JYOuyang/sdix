@@ -211,8 +211,15 @@
   function flashHint(msg) {
     const h = $("#series-hint");
     h.textContent = msg;
+    h.classList.remove("flash");
+    void h.offsetWidth; // restart the pulse when a flash is already showing
+    h.classList.add("flash");
     clearTimeout(hintTimer);
-    hintTimer = setTimeout(() => { hintTimer = null; h.textContent = defaultHint(); }, 4000);
+    hintTimer = setTimeout(() => {
+      hintTimer = null;
+      h.classList.remove("flash");
+      h.textContent = defaultHint();
+    }, 4000);
   }
 
   function defaultHint() {

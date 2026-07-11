@@ -66,7 +66,15 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .check-row { display: block; margin-top: 8px; font-size: 13.5px; }
 .check-row-top { margin: 0 0 10px; }
 .check-row input:disabled + span, .check-row:has(input:disabled) { color: var(--muted); }
-.hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; }
+.hint { color: var(--muted); font-size: 12px; margin: 6px 0 0; border-radius: 4px; }
+.hint.flash { color: #8a5a00; animation: hint-flash 1.2s ease-out; }
+@keyframes hint-flash {
+  from { background: #fbe9c4; }
+  to { background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hint.flash { animation: none; }
+}
 
 /* Series list */
 .series-list { list-style: none; margin: 0; padding: 0; }
