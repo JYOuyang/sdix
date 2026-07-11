@@ -37,7 +37,8 @@ whose figures this explorer's charts follow.
 | URL | View |
 |---|---|
 | `?s=KY&s=TN` | Kentucky vs Tennessee, everyone else grey |
-| `?s=CA&s=NC&s=TN&s=MI&s=WA` | the five states from the report's trends figure |
+| `?s=CA&s=NY&hide=1` | California vs New York, everyone else hidden |
+| `?s=CA&s=WA&s=NC&s=MI&s=TN` | the five states from the report's trends figure |
 | `?s=New%20England:CT,MA,ME,NH,RI,VT&s=Deep%20South:AL,GA,LA,MS,SC` | two named groups with mean lines |
 | `&m=additive` | additive index instead of MCMC |
 | `&band=1` | ±1 SD band (MCMC only) |
