@@ -284,6 +284,10 @@
         b.title = DATA.states[code].name + " — all " + MAX_SERIES + " colors are in use";
       }
       b.addEventListener("click", () => toggleState(code));
+      // Hover symmetry: pointing at a chip emphasizes its grey line, the same
+      // in-place restyle line hover uses; no-ops for highlighted/hidden states.
+      b.addEventListener("mouseenter", () => styleBg(code, true));
+      b.addEventListener("mouseleave", () => styleBg(code, false));
       grid.appendChild(b);
     }
 
