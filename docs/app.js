@@ -403,6 +403,11 @@
     const pw = width - margin.left - margin.right;
     const ph = height - margin.top - margin.bottom;
 
+    // x breaks thin with the panel: a year label needs ~38px, so narrow
+    // layouts step to every 4 (or 8) years instead of overlapping at 2.
+    const xSpan = YEARS[YEARS.length - 1] - YEARS[0];
+    const xStep = [2, 4, 8].find((s) => (Math.floor(xSpan / s) + 1) * 38 <= pw) || 8;
+
     // y domain: full extent over all states (background lines must fit),
     // plus the SD band when shown.
     let lo = Infinity, hi = -Infinity;
@@ -436,7 +441,7 @@
       if (tm2 > lo && t === yTicks[0]) el("line", { x1: margin.left, x2: margin.left + pw, y1: y(tm2), y2: y(tm2), stroke: "#ebebeb", "stroke-width": 0.5 }, grid);
     }
     for (const yr of YEARS) {
-      const major = yr % 2 === 0;
+      const major = yr % xStep === 0;
       el("line", { x1: x(yr), x2: x(yr), y1: margin.top, y2: margin.top + ph, stroke: "#ebebeb", "stroke-width": major ? 1 : 0.5 }, grid);
     }
 
@@ -535,7 +540,7 @@
         .textContent = String(+t.toFixed(2));
     }
     for (const yr of YEARS) {
-      if (yr % 2 !== 0) continue;
+      if (yr % xStep !== 0) continue;
       el("line", { x1: x(yr), x2: x(yr), y1: margin.top + ph, y2: margin.top + ph + 4, stroke: "#333333", "stroke-width": 1 }, svg);
       el("text", { x: x(yr), y: margin.top + ph + 17, "text-anchor": "middle", fill: "#4d4d4d", "font-size": 11.5 }, svg)
         .textContent = String(yr);
