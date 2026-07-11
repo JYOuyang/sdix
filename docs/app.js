@@ -20,8 +20,15 @@
   const CODES = Object.keys(DATA.states).sort();
   const NOTES = window.SDI_ANNOTATIONS || {};
 
-  // Validated categorical palette (light mode), fixed slot order.
-  const PALETTE = ["#2a78d6", "#1baf7a", "#eda100", "#008300", "#4a3aa7", "#e34948", "#e87ba4", "#eb6834"];
+  // Validated categorical palette (light mode), fixed slot order. Deviates
+  // from the reference theme: green is demoted past violet/red/magenta so
+  // typical (≤5-series) charts never carry two green-family hues (aqua +
+  // green), and orange sits dead last because the 7-color set is strictly
+  // stronger with green (red↔orange is the weakest normal/tritan pair).
+  // All-pairs CVD separation is order-invariant, so validation is unchanged;
+  // the floor-band pairs (worst: orange↔green, protan ΔE 11.2) need the
+  // end-of-line direct labels as relief, which every series already gets.
+  const PALETTE = ["#2a78d6", "#1baf7a", "#eda100", "#4a3aa7", "#e34948", "#e87ba4", "#008300", "#eb6834"];
   const MAX_SERIES = PALETTE.length;
 
   // Everything drawn inside the SVG uses literal values, never CSS classes or
