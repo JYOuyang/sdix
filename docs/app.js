@@ -805,11 +805,12 @@
     return lines.join("\n") + "\n";
   }
 
-  function csvFilename() {
+  // Shared with the PNG download so both exports name files the same way.
+  function exportFilename(ext) {
     const parts = state.series.map((s) =>
       s.type === "group" ? s.label.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : s.states[0]);
     const name = ["sdi", state.metric, ...parts].filter(Boolean).join("-");
-    return name.slice(0, 64).replace(/-+$/, "") + ".csv";
+    return name.slice(0, 64).replace(/-+$/, "") + "." + ext;
   }
 
   $("#download-csv").addEventListener("click", (e) => {
@@ -819,7 +820,7 @@
     if (!state.series.length) return;
     const a = document.createElement("a");
     a.href = URL.createObjectURL(new Blob([buildCsv()], { type: "text/csv" }));
-    a.download = csvFilename();
+    a.download = exportFilename("csv");
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 30000);
     const btn = $("#download-csv");
@@ -885,7 +886,7 @@
       try {
         const a = document.createElement("a");
         a.href = URL.createObjectURL(await blob);
-        a.download = "sdi-explorer.png";
+        a.download = exportFilename("png");
         a.click();
         setTimeout(() => URL.revokeObjectURL(a.href), 30000);
         outcome = "Downloaded ✓";
@@ -896,6 +897,23 @@
     btn.textContent = outcome;
     btn.classList.toggle("copied", outcome !== "Export failed");
     setTimeout(() => { btn.textContent = "Copy image"; btn.classList.remove("copied"); }, 1600);
+  });
+
+  $("#download-png").addEventListener("click", async () => {
+    const btn = $("#download-png");
+    let outcome = "Downloaded ✓";
+    try {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(await exportPngBlob());
+      a.download = exportFilename("png");
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+    } catch {
+      outcome = "Export failed";
+    }
+    btn.textContent = outcome;
+    btn.classList.toggle("copied", outcome !== "Export failed");
+    setTimeout(() => { btn.textContent = "Download PNG"; btn.classList.remove("copied"); }, 1600);
   });
 
   $("#copy-link").addEventListener("click", async () => {
