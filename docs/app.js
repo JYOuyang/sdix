@@ -691,7 +691,11 @@
       rows.push({ label: s.type === "group" ? s.label + " (mean)" : s.label, color: seriesColor(s), v });
     }
     if (hoveredBg && !seriesForState(hoveredBg)) {
-      rows.push({ label: DATA.states[hoveredBg].name + " — click to add", color: "#8a8a8a", v: metricValues(hoveredBg)[yi] });
+      // "click to add" holds at the cap only while a group is armed (adding a
+      // member needs no free slot) — same condition as the chip muting.
+      const atCap = freeSlot() < 0 && !state.activeGroup;
+      const invite = atCap ? " — all " + MAX_SERIES + " colors in use" : " — click to add";
+      rows.push({ label: DATA.states[hoveredBg].name + invite, color: "#8a8a8a", v: metricValues(hoveredBg)[yi] });
     }
     const fedNotes = state.notes ? notesFor("US", year) : [];
     if (!rows.length && !fedNotes.length) { hideTooltip(); return; }
