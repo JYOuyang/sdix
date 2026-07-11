@@ -727,16 +727,9 @@
 
   // --------------------------------------------------------------- table
 
-  function renderTable() {
-    const wrap = $("#table-wrap");
-    wrap.textContent = "";
-    if (!state.series.length) {
-      wrap.appendChild(html("p", "hint", "Highlight one or more states to see their values here."));
-      return;
-    }
-    const table = document.createElement("table");
-    const head = table.createTHead().insertRow();
-    head.appendChild(html("th", "", "Year"));
+  // One column per series; a group contributes its mean plus each member.
+  // Shared by the HTML table and the CSV download so they always agree.
+  function tableColumns() {
     const cols = [];
     for (const s of state.series) {
       if (s.type === "group") {
@@ -746,6 +739,21 @@
         cols.push({ label: s.label, vals: metricValues(s.states[0]) });
       }
     }
+    return cols;
+  }
+
+  function renderTable() {
+    $("#download-csv").disabled = !state.series.length;
+    const wrap = $("#table-wrap");
+    wrap.textContent = "";
+    if (!state.series.length) {
+      wrap.appendChild(html("p", "hint", "Highlight one or more states to see their values here."));
+      return;
+    }
+    const table = document.createElement("table");
+    const head = table.createTHead().insertRow();
+    head.appendChild(html("th", "", "Year"));
+    const cols = tableColumns();
     for (const c of cols) head.appendChild(html("th", "", c.label));
     const body = table.createTBody();
     YEARS.forEach((yr, i) => {
@@ -755,6 +763,46 @@
     });
     wrap.appendChild(table);
   }
+
+  // ---------------------------------------------------------- CSV download
+
+  function csvEscape(v) {
+    return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  }
+
+  // Full source precision (4 dp in data.js), not the table's 2-dp display;
+  // +toFixed re-rounds group means to match and strips trailing zeros.
+  function buildCsv() {
+    const cols = tableColumns();
+    const lines = [["Year", ...cols.map((c) => c.label)].map(csvEscape).join(",")];
+    YEARS.forEach((yr, i) => {
+      lines.push([yr, ...cols.map((c) => (c.vals[i] == null ? "" : +c.vals[i].toFixed(4)))].join(","));
+    });
+    return lines.join("\n") + "\n";
+  }
+
+  function csvFilename() {
+    const parts = state.series.map((s) =>
+      s.type === "group" ? s.label.replace(/[^A-Za-z0-9]+/g, "-").replace(/^-+|-+$/g, "") : s.states[0]);
+    const name = ["sdi", state.metric, ...parts].filter(Boolean).join("-");
+    return name.slice(0, 64).replace(/-+$/, "") + ".csv";
+  }
+
+  $("#download-csv").addEventListener("click", (e) => {
+    // Inside <summary>: don't let the click also toggle the table open/shut.
+    e.preventDefault();
+    e.stopPropagation();
+    if (!state.series.length) return;
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([buildCsv()], { type: "text/csv" }));
+    a.download = csvFilename();
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30000);
+    const btn = $("#download-csv");
+    btn.textContent = "Downloaded ✓";
+    btn.classList.add("copied");
+    setTimeout(() => { btn.textContent = "Download CSV"; btn.classList.remove("copied"); }, 1600);
+  });
 
   // --------------------------------------------------------------- wiring
 

@@ -150,6 +150,8 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 
 .table-view { margin-top: 14px; font-size: 13px; }
 .table-view summary { cursor: pointer; color: var(--ink-2); }
+.table-view summary .btn { margin-left: 8px; }
+.table-view summary .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .table-wrap { overflow-x: auto; margin-top: 8px; }
 .table-wrap table { border-collapse: collapse; background: var(--surface); }
 .table-wrap th, .table-wrap td {
