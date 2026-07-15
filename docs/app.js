@@ -584,7 +584,7 @@
       const site = /^https?:$/.test(location.protocol)
         ? location.host + location.pathname.replace(/\/index\.html$/, "").replace(/\/$/, "")
         : "";
-      el("text", { x: margin.left, y: height - 8, fill: "#898781", "font-size": 10.5 }, svg)
+      el("text", { x: margin.left, y: height - 8, fill: "#726f6b", "font-size": 10.5 }, svg)
         .textContent = (site ? site + " · " : "") + "State Democracy Index 2.0, Democracy Policy Lab";
     }
 
