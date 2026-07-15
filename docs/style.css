@@ -115,7 +115,7 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .state-chip.capped { opacity: 0.35; cursor: not-allowed; }
 .state-chip.capped:hover { border-color: rgba(11,11,11,0.18); color: var(--ink-2); }
 
-.examples a { display: block; font-size: 13px; color: var(--accent); margin: 4px 0; }
+.examples a { display: block; font-size: 13px; color: var(--accent); margin: 4px 0; padding: 3px 0; }
 
 /* Chart area */
 .chart-area { min-width: 0; }

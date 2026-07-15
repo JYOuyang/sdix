@@ -275,6 +275,7 @@
       b.type = "button";
       b.title = DATA.states[code].name;
       const owner = seriesForState(code);
+      b.setAttribute("aria-pressed", owner ? "true" : "false");
       if (owner) {
         b.classList.add("on");
         b.style.background = seriesColor(owner);
