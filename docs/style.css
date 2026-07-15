@@ -165,7 +165,7 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .table-wrap th { background: #f3f3f0; font-weight: 600; text-align: right; }
 .table-wrap th:first-child, .table-wrap td:first-child { text-align: left; }
 
-.source { color: var(--muted); font-size: 12px; max-width: 80ch; }
+.source { color: var(--muted); font-size: 12px; max-width: 100ch; }
 .source a { color: var(--ink-2); }
 
 /* SVG internals: rendering-critical properties live as inline attributes in
