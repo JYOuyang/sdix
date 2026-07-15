@@ -235,7 +235,7 @@
   }
 
   function defaultHint() {
-    if (state.activeGroup) return "Group armed: clicking a state adds it to the highlighted group. Click the group again to disarm.";
+    if (state.activeGroup) return "Group armed: clicking a state adds it to the highlighted group. Click the group again — or press Esc — to disarm.";
     if (!state.series.length) return "Nothing highlighted — all states are shown in grey. Click a state below or a grey line in the chart.";
     return "";
   }
@@ -849,6 +849,9 @@
   $("#new-group").addEventListener("click", () => { newGroup(); update(); });
   $("#clear-all").addEventListener("click", () => {
     state.series = []; state.activeGroup = null; update();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && state.activeGroup) { state.activeGroup = null; update(); }
   });
   // --------------------------------------------------------- image export
 
