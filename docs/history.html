@@ -57,7 +57,9 @@
 for this: <a href="https://democracypolicylab.berkeley.edu/state-democracy-index/">democracypolicylab.berkeley.edu/state-democracy-index</a>.
 Give me some repo name suggestions? sdix?” The name stuck.</p>
 <p>On July 4, 2026 the repo was set up by hand: <code>git init</code>, a remote, and three CSVs from the
-Democracy Policy Lab dropped into the root. Screenshots of the report's figures sat alongside them as a visual reference.</p>
+Democracy Policy Lab dropped into the root, along with the report PDF. Two screenshots of the report's figures sat
+alongside them as a visual reference: the by-state trends figure, saved the day before, and the party-control figure,
+saved six minutes before the prompt.</p>
 <table>
   <tr><th>File</th><th>Contents</th></tr>
   <tr><td><code>SDI_2.0.csv</code></td><td>50 states × 24 years (2000–2023): MCMC index, its SD and SE, and the additive index</td></tr>
@@ -110,9 +112,12 @@ site/data.js is generated from SDI_2.0.csv by site/build_data.py.</pre>
 
 <h3>Decisions that were made without being asked for</h3>
 <ul>
-  <li><strong>Loading a design skill first.</strong> Before writing anything, Claude asked to load its frontend
-    web-design skill and worked from that. The transcript is gone (see below), but James was there and vouches for it.
-    The quiet page chrome and the token-based stylesheet are what that skill tends to produce.</li>
+  <li><strong>Loading the dataviz skill first.</strong> Before writing anything, Claude asked to load a skill and worked
+    from it. The files say which one: the eight series colors are, digit for digit, the categorical palette of Claude Code's
+    bundled dataviz skill, under the skill's own comment “validated categorical palette, fixed slot order”, and the page's
+    off-white, ink, and muted-grey tokens are that skill's surface and text values. Its procedure also explains most of the
+    unasked-for features below: a hover crosshair and tooltip on every line chart, a legend plus direct labels, a table
+    view, color slots that never repaint, and a hard cap of eight series.</li>
   <li><strong>No dependencies at all.</strong> No charting library, no bundler, no framework. The chart is hand-built SVG.
     “Static, client-JS, GitHub Pages” was read as “nothing to install and nothing to build”, which is still the project's standing rule.</li>
   <li><strong>Data baked in, not fetched.</strong> A small Python script turns the CSV into <code>data.js</code>, so the page
@@ -127,13 +132,16 @@ site/data.js is generated from SDI_2.0.csv by site/build_data.py.</pre>
   <li><strong>Things the prompt never mentioned.</strong> A group mean drawn as a bold line, a ±1 SD band using the MCMC
     uncertainty column, direct labels at the right edge with overlap resolution, a hover crosshair with per-year values,
     a collapsible data table, clickable grey background lines, and a Copy link button.</li>
+  <li><strong>Reading the screenshot.</strong> One of the three example links plots California, North Carolina, Tennessee,
+    Michigan, and Washington, the five states highlighted in the trends screenshot. Nothing in the prompt names them. The
+    screenshot has no caption, so the link called it Figure 3; the report calls it Figure 5, corrected a week later.</li>
 </ul>
 
 <h3>What is and is not on record</h3>
 <p class="note">Claude Code keeps session transcripts for a limited time, and the transcript of this session had been
 pruned by the time this page was written. The prompt text, its timestamp, and the follow-up messages survive in the
-prompt history; the code survives in git. The turn-by-turn between 18:25 and 18:50 is not recoverable from disk,
-so the one thing on this page that rests on memory rather than a file is the design-skill request above.</p>
+prompt history; the code survives in git. The turn-by-turn between 18:25 and 18:50 is not recoverable from disk.
+James remembers approving a skill load at the start; which skill it was is settled by the palette, not by memory.</p>
 
 <h2>The rest of the evening</h2>
 <p>Everything after the first commit was iteration in the same session. The commit log for July 4 (times PT):</p>
