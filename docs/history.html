@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>How the SDI 2.0 Explorer was built</title>
+<meta name="description" content="Project history: the single prompt that produced the first version of the SDI 2.0 Explorer, and what came back.">
+<link rel="canonical" href="https://jyouyang.github.io/sdix/history.html">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗳️</text></svg>">
+<link rel="stylesheet" href="style.css">
+<style>
+  .site-header { max-width: 760px; }
+  .prose { max-width: 760px; margin: 0 auto; padding: 8px 24px 56px; font-size: 15px; }
+  .prose h2 { font-size: 18px; margin: 36px 0 10px; }
+  .prose h3 { font-size: 14px; margin: 24px 0 6px; }
+  .prose p, .prose li { max-width: 68ch; }
+  .prose a { color: var(--accent); }
+  .prose blockquote {
+    margin: 14px 0; padding: 14px 18px; background: var(--surface);
+    border: 1px solid var(--hairline); border-left: 3px solid var(--accent); border-radius: 8px;
+  }
+  .prose blockquote p { margin: 0 0 10px; }
+  .prose blockquote p:last-child { margin-bottom: 0; }
+  .meta { color: var(--muted); font-size: 12.5px; margin: 0 0 4px; }
+  .prose pre {
+    background: var(--surface); border: 1px solid var(--hairline); border-radius: 8px;
+    padding: 12px 14px; font-size: 12.5px; overflow-x: auto; line-height: 1.5;
+  }
+  .prose code { font-size: 0.92em; }
+  .prose table { border-collapse: collapse; background: var(--surface); font-size: 13px; margin: 10px 0; }
+  .prose th, .prose td { border: 1px solid var(--hairline); padding: 4px 10px; text-align: left; vertical-align: top; }
+  .prose th { background: #f3f3f0; font-weight: 600; }
+  .prose td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .prose figure { margin: 16px 0; }
+  .prose figure img { display: block; width: 100%; height: auto; border: 1px solid var(--hairline); border-radius: 8px; background: var(--surface); }
+  .prose figcaption { color: var(--muted); font-size: 12.5px; margin-top: 6px; }
+  .timeline { list-style: none; padding: 0; margin: 0; }
+  .timeline li { display: grid; grid-template-columns: 5em 1fr; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--hairline); }
+  .timeline time { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+  .note { color: var(--ink-2); font-size: 13.5px; }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <div>
+    <h1>How the explorer was built <span class="version">history</span></h1>
+    <p class="subtitle">The <a href="./">SDI 2.0 Explorer</a> started as one zero-shot prompt to Claude Code and one commit,
+      about twenty-five minutes apart. This page records that prompt and what came back.</p>
+  </div>
+</header>
+
+<main class="prose">
+
+<h2>Before the prompt</h2>
+<p>The idea surfaced on May 11, 2026, in an unrelated session: “I want to make a repo that makes nicer frontend charts
+for this: <a href="https://democracypolicylab.berkeley.edu/state-democracy-index/">democracypolicylab.berkeley.edu/state-democracy-index</a>.
+Give me some repo name suggestions? sdix?” The name stuck.</p>
+<p>On July 4, 2026 the repo was set up by hand: <code>git init</code>, a remote, and three CSVs from the
+Democracy Policy Lab dropped into the root. Screenshots of the report's figures sat alongside them as a visual reference.</p>
+<table>
+  <tr><th>File</th><th>Contents</th></tr>
+  <tr><td><code>SDI_2.0.csv</code></td><td>50 states × 24 years (2000–2023): MCMC index, its SD and SE, and the additive index</td></tr>
+  <tr><td><code>SDI_2.0_item_data.csv</code></td><td>The underlying policy items per state-year</td></tr>
+  <tr><td><code>variables_list.csv</code></td><td>Item codebook</td></tr>
+</table>
+
+<h2>The prompt</h2>
+<p class="meta">Claude Code · model: Claude Fable 5 · July 4, 2026, 18:25 PT · the first message of the session, verbatim</p>
+<blockquote>
+<p>I want to build a static client-Javascript website, deployable to GitHub Pages, that allows users to plot states, individual or grouped.</p>
+<p>Ideally, the query string would encode state information and make it easier for people to share. (Example use case: plotting Kentucky against Tennessee with the remaining states in grey in the background)</p>
+<p>The existing plots have been extracted (i.e. screenshot) from the SDI 2.0 paper and have been independently confirmed to have been made by ggplot2 using theme_bw.<br>
+Raw data are in the CSVs.</p>
+</blockquote>
+<p>That is the whole specification. Four requirements are in it: static and client-side, deployable to GitHub Pages,
+individual or grouped states, and a shareable query string. One example use case. One styling constraint, with
+the reasoning attached: the paper's figures are ggplot2 <code>theme_bw</code>, so the site should look like they do.
+No file layout, no library preference, no mention of a data pipeline. And no example: no mockup, no reference
+page, no sketch of the UI. Zero-shot, in the prompting sense. The only behaviour spelled out is the query string.</p>
+
+<h2>One prompt, one commit</h2>
+<p class="meta">Second message, 18:50 PT: “Already did git init manually and set repo origin. Go ahead and add and commit this and then we'll iterate further before Pages deployment.”</p>
+<p>Twenty-five minutes after the prompt, the first commit landed. Nine files, 3,434 lines, of which about 2,400 are
+the CSVs themselves.</p>
+<pre>ab57606  Add SDI 2.0 explorer static site and source data
+
+Static, dependency-free site (vanilla HTML/CSS/JS + SVG) for plotting
+State Democracy Index 2.0 trends, 2000-2023. States can be highlighted
+individually or as named groups (members share a color, bold mean line);
+the full view is encoded in the query string for sharing, e.g. ?s=KY&amp;s=TN.
+Chart styling replicates ggplot2 theme_bw to match the paper's figures.
+
+site/data.js is generated from SDI_2.0.csv by site/build_data.py.</pre>
+
+<table>
+  <tr><th>File</th><th class="num">Lines</th><th>Role</th></tr>
+  <tr><td><code>site/app.js</code></td><td class="num">625</td><td>State model, URL codec, SVG chart renderer, hover layer, data table</td></tr>
+  <tr><td><code>site/style.css</code></td><td class="num">146</td><td>Page chrome plus the <code>theme_bw</code> color tokens</td></tr>
+  <tr><td><code>site/index.html</code></td><td class="num">80</td><td>Page shell and controls</td></tr>
+  <tr><td><code>site/README.md</code></td><td class="num">61</td><td>Features, URL scheme, two GitHub Pages deploy options</td></tr>
+  <tr><td><code>site/build_data.py</code></td><td class="num">51</td><td>Bakes the CSV into <code>data.js</code>, standard library only</td></tr>
+  <tr><td><code>site/data.js</code></td><td class="num">2</td><td>Generated data, one JSON literal on <code>window.SDI</code></td></tr>
+</table>
+
+<figure>
+  <img src="history-first-commit.png" width="1400" height="900" alt="The first commit's site rendered at ?s=KY&s=TN: a sidebar of controls and state chips on the left, and on the right a white ggplot2-style panel with all fifty states as thin grey lines, Kentucky in blue and Tennessee in green highlighted and labeled at the right edge.">
+  <figcaption>The first commit, checked out and rendered at <code>?s=KY&amp;s=TN</code>, the example use case from the prompt.</figcaption>
+</figure>
+
+<h3>Decisions that were made without being asked for</h3>
+<ul>
+  <li><strong>Loading a design skill first.</strong> Before writing anything, Claude asked to load its frontend
+    web-design skill and worked from that. The transcript is gone (see below), but James was there and vouches for it.
+    The quiet page chrome and the token-based stylesheet are what that skill tends to produce.</li>
+  <li><strong>No dependencies at all.</strong> No charting library, no bundler, no framework. The chart is hand-built SVG.
+    “Static, client-JS, GitHub Pages” was read as “nothing to install and nothing to build”, which is still the project's standing rule.</li>
+  <li><strong>Data baked in, not fetched.</strong> A small Python script turns the CSV into <code>data.js</code>, so the page
+    works from <code>file://</code> and needs no fetch, no CORS, no server.</li>
+  <li><strong>A series model with fixed palette slots.</strong> A “series” is one state or a named group. Each series owns
+    a palette slot for its lifetime, so adding or removing one never recolors the others.</li>
+  <li><strong>The URL codec.</strong> <code>?s=KY&amp;s=TN</code> for states; <code>?s=Deep%20South:AL,GA,LA,MS,SC</code> for a named
+    group; <code>m=additive</code> and <code>band=1</code> for the measure and the SD band. Written with
+    <code>history.replaceState</code> on every change, so the address bar is always the share link.</li>
+  <li><strong><code>theme_bw</code> as named tokens.</strong> Panel border grey20, major grid grey92 with thinner minor lines,
+    axis text grey30, white panel, ticks outside. The page chrome around it was deliberately kept quiet so the panel reads as the artifact.</li>
+  <li><strong>Things the prompt never mentioned.</strong> A group mean drawn as a bold line, a ±1 SD band using the MCMC
+    uncertainty column, direct labels at the right edge with overlap resolution, a hover crosshair with per-year values,
+    a collapsible data table, clickable grey background lines, and a Copy link button.</li>
+</ul>
+
+<h3>What is and is not on record</h3>
+<p class="note">Claude Code keeps session transcripts for a limited time, and the transcript of this session had been
+pruned by the time this page was written. The prompt text, its timestamp, and the follow-up messages survive in the
+prompt history; the code survives in git. The turn-by-turn between 18:25 and 18:50 is not recoverable from disk,
+so the one thing on this page that rests on memory rather than a file is the design-skill request above.</p>
+
+<h2>The rest of the evening</h2>
+<p>Everything after the first commit was iteration in the same session. The commit log for July 4 (times PT):</p>
+<ul class="timeline">
+  <li><time>18:51</time><span>Add SDI 2.0 explorer static site and source data</span></li>
+  <li><time>18:55</time><span>Move build script and README to repo root</span></li>
+  <li><time>18:57</time><span>Credit Democracy Policy Lab as data source</span></li>
+  <li><time>18:59</time><span>Use pathlib in build_data.py <span class="note">(“It's 2026”)</span></span></li>
+  <li><time>19:05</time><span>Rename site/ to docs/ for native GitHub Pages branch deploy <span class="note">(a symlink was tried first; Pages forbids them)</span></span></li>
+  <li><time>19:09</time><span>Link the SDI 2.0 report PDF from the README intro</span></li>
+  <li><time>19:32</time><span class="note"><a href="https://jyouyang.github.io/sdix/">jyouyang.github.io/sdix</a> is live, after three failed Pages builds during a GitHub-wide outage</span></li>
+  <li><time>19:36</time><span>Move Measure controls to the bottom of the sidebar</span></li>
+  <li><time>19:54</time><span>Show chart above controls on narrow screens</span></li>
+  <li><time>19:56</time><span>Link the report PDF from the site's source line</span></li>
+  <li><time>20:01</time><span>Add live-site link, social preview metadata, and favicon</span></li>
+  <li><time>20:13</time><span>Make the chart SVG standalone-safe <span class="note">(groundwork for Copy image)</span></span></li>
+  <li><time>20:51</time><span>Add “Hide unselected states” toggle</span></li>
+  <li><time>21:02</time><span>Put Hide-unselected first in the Measure block; add CA vs NY example</span></li>
+  <li><time>21:06</time><span>Put the States grid above the Highlighted list</span></li>
+</ul>
+<p>Later sessions added event annotations, PNG and CSV export, keyboard and screen-reader work, and a headless-Chrome
+verification recipe. The full log is on <a href="https://github.com/JYOuyang/sdix/commits/main">GitHub</a>.</p>
+
+<p class="source">Data: <a href="https://democracypolicylab.berkeley.edu/state-democracy-index/">Democracy Policy Lab</a>, UC Berkeley,
+<em>State Democracy Index 2.0</em>. Site built with Claude Code; commits are co-authored accordingly.</p>
+
+</main>
+</body>
+</html>
