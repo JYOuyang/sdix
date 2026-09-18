@@ -112,12 +112,10 @@ site/data.js is generated from SDI_2.0.csv by site/build_data.py.</pre>
 
 <h3>Decisions that were made without being asked for</h3>
 <ul>
-  <li><strong>Loading the dataviz skill first.</strong> Before writing anything, Claude asked to load a skill and worked
-    from it. The files say which one: the eight series colors are, digit for digit, the categorical palette of Claude Code's
-    bundled dataviz skill, under the skill's own comment “validated categorical palette, fixed slot order”, and the page's
-    off-white, ink, and muted-grey tokens are that skill's surface and text values. Its procedure also explains most of the
-    unasked-for features below: a hover crosshair and tooltip on every line chart, a legend plus direct labels, a table
-    view, color slots that never repaint, and a hard cap of eight series.</li>
+  <li><strong>Loading the dataviz skill first.</strong> Before writing anything, Claude asked to load Claude Code's
+    bundled dataviz skill and worked from it. The series palette and the page's ink and surface tokens are that skill's,
+    and its procedure accounts for most of the unasked-for features below: a hover crosshair and tooltip, a legend plus
+    direct labels, a table view, color slots that never repaint, and a hard cap of eight series.</li>
   <li><strong>No dependencies at all.</strong> No charting library, no bundler, no framework. The chart is hand-built SVG.
     “Static, client-JS, GitHub Pages” was read as “nothing to install and nothing to build”, which is still the project's standing rule.</li>
   <li><strong>Data baked in, not fetched.</strong> A small Python script turns the CSV into <code>data.js</code>, so the page
@@ -141,7 +139,7 @@ site/data.js is generated from SDI_2.0.csv by site/build_data.py.</pre>
 <p class="note">Claude Code keeps session transcripts for a limited time, and the transcript of this session had been
 pruned by the time this page was written. The prompt text, its timestamp, and the follow-up messages survive in the
 prompt history; the code survives in git. The turn-by-turn between 18:25 and 18:50 is not recoverable from disk.
-James remembers approving a skill load at the start; which skill it was is settled by the palette, not by memory.</p>
+The dataviz skill load at the start is known from the palette it left behind and from memory.</p>
 
 <h2>The rest of the evening</h2>
 <p>Everything after the first commit was iteration in the same session. The commit log for July 4 (times PT):</p>
