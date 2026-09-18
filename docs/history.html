@@ -160,8 +160,40 @@ The dataviz skill load at the start is known from the palette it left behind and
   <li><time>21:02</time><span>Put Hide-unselected first in the Measure block; add CA vs NY example</span></li>
   <li><time>21:06</time><span>Put the States grid above the Highlighted list</span></li>
 </ul>
-<p>Later sessions added event annotations, PNG and CSV export, keyboard and screen-reader work, and a headless-Chrome
-verification recipe. The full log is on <a href="https://github.com/JYOuyang/sdix/commits/main">GitHub</a>.</p>
+<h2>What followed</h2>
+<p>The next ten days were shorter sessions, each one strand. Four of them changed what the site is. The full log is on
+<a href="https://github.com/JYOuyang/sdix/commits/main">GitHub</a>.</p>
+
+<h3>Image export, July 4 to 6</h3>
+<p>The evening of the first commit ended with a long conversation about a Copy image button, and the first step landed
+that night: every rendering-critical property moved out of the stylesheet and into inline SVG attributes, so a chart
+serialized out of the page still renders on its own. Two days later the renderer was parameterized to draw a second,
+offscreen version of the chart at a fixed size with its own title, legend, and source caption, rasterized at twice
+that size. The clipboard path is tried first, constructed synchronously in the click handler because Safari insists,
+with a file download as the fallback. A Download PNG button followed on July 11. A hook for a build-time social
+preview image was exposed in the same commit and never used.</p>
+
+<h3>Annotations, July 5</h3>
+<p>The only hand-written content on the site. A curated file marks state-year events, drawn as dots on highlighted
+lines with the note in the tooltip, behind a Show annotations toggle. A reserved US key marks nationwide events
+instead, as dashed rules across the whole panel that show even with nothing highlighted; it was seeded with
+Crawford in 2008, Shelby County in 2013, and Rucho in 2019. State entries came in over the following day for North
+Carolina, Tennessee, Florida, Georgia, Ohio, Iowa, and Oregon. This is the point where the explorer stopped being only
+a plotter.</p>
+
+<h3>The verify skill, July 11</h3>
+<p>Every session that wanted to see the page had re-derived the same headless-Chrome recipe from scratch. In the middle
+of the Download PNG work, that became a project skill: Playwright through <code>uv run</code> with inline
+dependencies against the system Chrome, plus the handles for driving the app, such as URL parameters for initial
+state, download capture, clipboard permissions, and synthetic hover. A raw Chrome screenshot one-liner was kept as the
+fast path, and the timing that justified keeping both is recorded in the skill. The prompts that shaped it survive;
+the session transcript does not.</p>
+
+<h3>The additive index, July 14</h3>
+<p>The source note had described the additive index loosely. The correction, to a standardized, equal-weighted sum of
+the items, was checked two ways: against the replication code, and by reproducing the published index from the item
+data to machine precision. It is the one commit where the analysis work running alongside the site, none of it in
+this repository, fed back into what the page says.</p>
 
 <p class="source">Data: <a href="https://democracypolicylab.berkeley.edu/state-democracy-index/">Democracy Policy Lab</a>, UC Berkeley,
 <em>State Democracy Index 2.0</em>. Site built with Claude Code; commits are co-authored accordingly.</p>
