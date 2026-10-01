@@ -27,7 +27,12 @@
     background: var(--surface); border: 1px solid var(--hairline); border-radius: 8px;
     padding: 12px 14px; font-size: 12.5px; overflow-x: auto; line-height: 1.5;
   }
-  .prose code { font-size: 0.92em; }
+  .prose code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 0.88em;
+    background: #f0efeb; border-radius: 4px; padding: 0.1em 0.35em;
+    -webkit-box-decoration-break: clone; box-decoration-break: clone; /* keep the chip intact across a wrap */
+  }
+  .prose pre code, .prose td code { background: none; padding: 0; border-radius: 0; } /* already framed */
   .prose table { border-collapse: collapse; background: var(--surface); font-size: 13px; margin: 10px 0; }
   .prose th, .prose td { border: 1px solid var(--hairline); padding: 4px 10px; text-align: left; vertical-align: top; }
   .prose th { background: #f3f3f0; font-weight: 600; }
@@ -126,8 +131,8 @@ site/data.js is generated from SDI_2.0.csv by site/build_data.py.</pre>
   <li><strong>The URL codec.</strong> <code>?s=KY&amp;s=TN</code> for states; <code>?s=Deep%20South:AL,GA,LA,MS,SC</code> for a named
     group; <code>m=additive</code> and <code>band=1</code> for the measure and the SD band. Written with
     <code>history.replaceState</code> on every change, so the address bar is always the share link.</li>
-  <li><strong><code>theme_bw</code> as named tokens.</strong> Panel border grey20, major grid grey92 with thinner minor lines,
-    axis text grey30, white panel, ticks outside. The page chrome around it was deliberately kept quiet so the panel reads as the artifact.</li>
+  <li><strong><code>theme_bw</code> as named tokens.</strong> Panel border <code>grey20</code>, major grid <code>grey92</code> with thinner minor lines,
+    axis text <code>grey30</code>, white panel, ticks outside. The page chrome around it was deliberately kept quiet so the panel reads as the artifact.</li>
   <li><strong>Things the prompt never mentioned.</strong> A group mean drawn as a bold line, a ±1 SD band using the MCMC
     uncertainty column, direct labels at the right edge with overlap resolution, a hover crosshair with per-year values,
     a collapsible data table, clickable grey background lines, and a Copy link button.</li>
@@ -166,17 +171,17 @@ The dataviz skill load at the start is known from the palette it left behind and
 <a href="https://github.com/JYOuyang/sdix/commits/main">GitHub</a>.</p>
 
 <h3>Image export, July 4 to 6</h3>
-<p>The evening of the first commit ended with a long conversation about a Copy image button, and the first step landed
-that night: every rendering-critical property moved out of the stylesheet and into inline SVG attributes, so a chart
-serialized out of the page still renders on its own. Two days later the renderer was parameterized to draw a second,
+<p>The evening of the first commit ended with a long conversation about a Copy image button, and the <a href="https://github.com/JYOuyang/sdix/commit/5ac751d00799f6026d50637a8dd943069682cf99">first step landed
+that night</a>: every rendering-critical property moved out of the stylesheet and into inline SVG attributes, so a chart
+serialized out of the page still renders on its own. <a href="https://github.com/JYOuyang/sdix/commit/aee401a15302bc30e63230cf5c67a5fcc1647f29">Two days later</a> the renderer was parameterized to draw a second,
 offscreen version of the chart at a fixed size with its own title, legend, and source caption, rasterized at twice
 that size. The clipboard path is tried first, constructed synchronously in the click handler because Safari insists,
-with a file download as the fallback. A Download PNG button followed on July 11. A hook for a build-time social
-preview image was exposed in the same commit and never used.</p>
+with a file download as the fallback. A hook for a build-time social preview image was exposed in the same commit
+and never used. A <a href="https://github.com/JYOuyang/sdix/commit/ab3ca93a8988d535e1cd090080071c6b6a1d54db">Download PNG button</a> followed on July 11.</p>
 
 <h3>Annotations, July 5</h3>
-<p>The only hand-written content on the site. A curated file marks state-year events, drawn as dots on highlighted
-lines with the note in the tooltip, behind a Show annotations toggle. A reserved US key marks nationwide events
+<p>The only hand-written content on the site. A <a href="https://github.com/JYOuyang/sdix/commit/6ebfbbbfe7b20fa382238ec12dfadba3ec6813db">curated file</a> marks state-year events, drawn as dots on highlighted
+lines with the note in the tooltip, behind a Show annotations toggle. A <a href="https://github.com/JYOuyang/sdix/commit/5b22af3d7aee0572ad66791142ad443dd787941d">reserved US key</a> marks nationwide events
 instead, as dashed rules across the whole panel that show even with nothing highlighted; it was seeded with
 Crawford in 2008, Shelby County in 2013, and Rucho in 2019. State entries came in over the following day for North
 Carolina, Tennessee, Florida, Georgia, Ohio, Iowa, and Oregon. This is the point where the explorer stopped being only
@@ -184,20 +189,20 @@ a plotter.</p>
 
 <h3>The verify skill, July 11</h3>
 <p>Every session that wanted to see the page had re-derived the same headless-Chrome recipe from scratch. In the middle
-of the Download PNG work, that became a project skill: Playwright through <code>uv run</code> with inline
+of the Download PNG work, <a href="https://github.com/JYOuyang/sdix/commit/e82f7446525053f28078ba94e253ce47286ae635">that became a project skill</a>: Playwright through <code>uv run</code> with inline
 dependencies against the system Chrome, plus the handles for driving the app, such as URL parameters for initial
 state, download capture, clipboard permissions, and synthetic hover. A raw Chrome screenshot one-liner was kept as the
 fast path, and the timing that justified keeping both is recorded in the skill. The prompts that shaped it survive;
 the session transcript does not.</p>
 
 <h3>The additive index, July 14</h3>
-<p>The source note had described the additive index loosely. The correction, to a standardized, equal-weighted sum of
+<p>The source note had described the additive index loosely. The <a href="https://github.com/JYOuyang/sdix/commit/72b3b7a20fdda38b56a485ea466ca574b9de8ef2">correction</a>, to a standardized, equal-weighted sum of
 the items, was checked two ways: against the replication code, and by reproducing the published index from the item
 data to machine precision. It is the one commit where the analysis work running alongside the site, none of it in
 this repository, fed back into what the page says.</p>
 
 <h2>About this page</h2>
-<p class="note">Written on September 17, 2026, in one Claude Code session with Claude Fable 5.1, from four sources: the
+<p class="note">Initially written on September 17, 2026, in one Claude Code session with Claude Fable 5.1, from four sources: the
 prompt history Claude Code keeps outside the transcripts, which holds every message James sent and when; the git log,
 mostly the commit bodies rather than the subjects; the first commit itself, checked out into a temporary worktree and
 rendered with headless Chrome for the screenshot above; and the two figure screenshots still sitting untracked in the
