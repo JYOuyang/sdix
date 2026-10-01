@@ -38,6 +38,7 @@
   .timeline { list-style: none; padding: 0; margin: 0; }
   .timeline li { display: grid; grid-template-columns: 5em 1fr; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--hairline); }
   .timeline time { color: var(--muted); font-variant-numeric: tabular-nums; font-size: 13px; }
+  .timeline time a { color: inherit; }
   .note { color: var(--ink-2); font-size: 13.5px; }
 </style>
 </head>
@@ -83,9 +84,9 @@ page, no sketch of the UI. Zero-shot, in the prompting sense. The only behaviour
 
 <h2>One prompt, one commit</h2>
 <p class="meta">Second message, 18:50 PT: “Already did git init manually and set repo origin. Go ahead and add and commit this and then we'll iterate further before Pages deployment.”</p>
-<p>Twenty-five minutes after the prompt, the first commit landed. Nine files, 3,434 lines, of which about 2,400 are
+<p>Twenty-five minutes after the prompt, the <a href="https://github.com/JYOuyang/sdix/commit/ab57606a5b3309103c3a9182924abe39b9153cfe">first commit</a> landed. Nine files, 3,434 lines, of which about 2,400 are
 the CSVs themselves.</p>
-<pre>ab57606  Add SDI 2.0 explorer static site and source data
+<pre><a href="https://github.com/JYOuyang/sdix/commit/ab57606a5b3309103c3a9182924abe39b9153cfe">ab57606</a>  Add SDI 2.0 explorer static site and source data
 
 Static, dependency-free site (vanilla HTML/CSS/JS + SVG) for plotting
 State Democracy Index 2.0 trends, 2000-2023. States can be highlighted
@@ -144,21 +145,21 @@ The dataviz skill load at the start is known from the palette it left behind and
 <h2>The rest of the evening</h2>
 <p>Everything after the first commit was iteration in the same session. The commit log for July 4 (times PT):</p>
 <ul class="timeline">
-  <li><time>18:51</time><span>Add SDI 2.0 explorer static site and source data</span></li>
-  <li><time>18:55</time><span>Move build script and README to repo root</span></li>
-  <li><time>18:57</time><span>Credit Democracy Policy Lab as data source</span></li>
-  <li><time>18:59</time><span>Use pathlib in build_data.py <span class="note">(“It's 2026”)</span></span></li>
-  <li><time>19:05</time><span>Rename site/ to docs/ for native GitHub Pages branch deploy <span class="note">(a symlink was tried first; Pages forbids them)</span></span></li>
-  <li><time>19:09</time><span>Link the SDI 2.0 report PDF from the README intro</span></li>
-  <li><time>19:32</time><span class="note"><a href="https://jyouyang.github.io/sdix/">jyouyang.github.io/sdix</a> is live, after three failed Pages builds during a GitHub-wide outage</span></li>
-  <li><time>19:36</time><span>Move Measure controls to the bottom of the sidebar</span></li>
-  <li><time>19:54</time><span>Show chart above controls on narrow screens</span></li>
-  <li><time>19:56</time><span>Link the report PDF from the site's source line</span></li>
-  <li><time>20:01</time><span>Add live-site link, social preview metadata, and favicon</span></li>
-  <li><time>20:13</time><span>Make the chart SVG standalone-safe <span class="note">(groundwork for Copy image)</span></span></li>
-  <li><time>20:51</time><span>Add “Hide unselected states” toggle</span></li>
-  <li><time>21:02</time><span>Put Hide-unselected first in the Measure block; add CA vs NY example</span></li>
-  <li><time>21:06</time><span>Put the States grid above the Highlighted list</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/ab57606a5b3309103c3a9182924abe39b9153cfe">18:51</a></time><span>Add SDI 2.0 explorer static site and source data</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/005f3d509993850c11391674419eac607f78de19">18:55</a></time><span>Move build script and README to repo root</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/ee1b2d33ec4d77e7155b26c50bcc5f733db5301e">18:57</a></time><span>Credit Democracy Policy Lab as data source</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/af10e4207e26f0daa5739ea7579c0a86d013afa2">18:59</a></time><span>Use pathlib in build_data.py <span class="note">(“It's 2026”)</span></span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/f7be9e70154269f153526a23a3eb59a3d60c3a44">19:05</a></time><span>Rename site/ to docs/ for native GitHub Pages branch deploy <span class="note">(a symlink was tried first; Pages forbids them)</span></span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/b212f80a0eb5b77ff1f3bcb64b14cdc2976b4928">19:09</a></time><span>Link the SDI 2.0 report PDF from the README intro</span></li>
+  <li><time>19:32</time><span class="note"><a href="https://jyouyang.github.io/sdix/">jyouyang.github.io/sdix</a> is live, after three failed Pages builds during <a href="https://github.com/orgs/community/discussions/200823">a spell of flaky Pages deploys</a></span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/a6ec53c37db0bedb31f41c18c0dcaa56a6c23647">19:36</a></time><span>Move Measure controls to the bottom of the sidebar</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/682e56535aeb163f489f8245d3ec151e2866d4a9">19:54</a></time><span>Show chart above controls on narrow screens</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/db07e501810e7df1ee5ddc4e85ded0898314a952">19:56</a></time><span>Link the report PDF from the site's source line</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/40be6f3d10db0d4468a2b23f818832e81a18ae12">20:01</a></time><span>Add live-site link, social preview metadata, and favicon</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/5ac751d00799f6026d50637a8dd943069682cf99">20:13</a></time><span>Make the chart SVG standalone-safe <span class="note">(groundwork for Copy image)</span></span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/07f104861856a42b4318264b816a1f8408ad07b6">20:51</a></time><span>Add “Hide unselected states” toggle</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/17644eec09f4e4de3970afcf1506148ebd7fa40b">21:02</a></time><span>Put Hide-unselected first in the Measure block; add CA vs NY example</span></li>
+  <li><time><a href="https://github.com/JYOuyang/sdix/commit/09ffe61ce2fd30c8aeaeea6dc9f16b35c3ab53c9">21:06</a></time><span>Put the States grid above the Highlighted list</span></li>
 </ul>
 <h2>What followed</h2>
 <p>The next ten days were shorter sessions, each one strand. Four of them changed what the site is. The full log is on
