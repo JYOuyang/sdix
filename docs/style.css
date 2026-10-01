@@ -135,6 +135,31 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 }
 #chart { display: block; width: 100%; }
 
+/* Touch readout: on devices without hover it stands in for the legend and
+   the tooltip. Rows keep legend order (no re-sort while scrubbing) so each
+   value stays in one place under the eye. */
+.readout, .readout-notes { display: none; }
+@media (hover: none) {
+  .legend { display: none; }
+  .readout {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    column-gap: 14px; row-gap: 3px; margin: 0 0 8px; font-size: 13px;
+  }
+  .readout-notes { display: block; margin-top: 8px; }
+  #chart {
+    touch-action: pan-y; /* vertical swipes scroll; horizontal drags scrub */
+    -webkit-tap-highlight-color: transparent; /* else Android flashes a line's whole bounding box */
+  }
+}
+.readout .ro-year { grid-column: 1 / -1; font-weight: 700; }
+.readout .ro-row { display: flex; align-items: center; gap: 6px; min-width: 0; min-height: 22px; }
+.readout .ro-row .swatch { width: 14px; height: 3px; flex: none; }
+.readout .ro-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.readout .ro-val { margin-left: auto; font-variant-numeric: tabular-nums; padding-left: 6px; }
+.readout .ro-other { grid-column: 1 / -1; color: var(--ink-2); min-height: 34px; }
+.readout .ro-other .btn { margin-left: 10px; padding: 5px 14px; }
+.readout .ro-hint { color: var(--muted); }
+
 .tooltip {
   position: absolute; pointer-events: none; z-index: 5;
   background: rgba(255,255,255,0.97); border: 1px solid rgba(11,11,11,0.25);
@@ -145,9 +170,9 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
 .tooltip .tt-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
 .tooltip .tt-row .swatch { width: 12px; height: 3px; }
 .tooltip .tt-val { margin-left: auto; font-variant-numeric: tabular-nums; padding-left: 10px; }
-.tooltip .tt-note { display: flex; align-items: flex-start; gap: 6px; margin: 3px 0 0; max-width: 230px; color: var(--ink-2); font-size: 12px; }
-.tooltip .tt-note .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; margin-top: 4px; }
-.tooltip .tt-note .rule {
+.tooltip .tt-note, .readout-notes .tt-note { display: flex; align-items: flex-start; gap: 6px; margin: 3px 0 0; max-width: 230px; color: var(--ink-2); font-size: 12px; }
+.tt-note .dot { width: 7px; height: 7px; border-radius: 50%; flex: none; margin-top: 4px; }
+.tt-note .rule {
   width: 7px; height: 12px; flex: none; margin-top: 2px;
   background: repeating-linear-gradient(to bottom, #9a9a9a 0 3px, transparent 3px 5px);
   background-size: 1px 100%; background-repeat: no-repeat; background-position: center;

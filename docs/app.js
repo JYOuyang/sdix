@@ -248,11 +248,23 @@
   let hoveredBg = null; // state code under the pointer (background line)
   let layout = null;    // geometry of the last render, for hover math
 
+  // Touch: the chart only inspects (a tap is synthesized as hover + click, so
+  // without this a tap meant to read a value toggled the line under it).
+  // lastPointer tracks the most recent input so hybrid devices switch cleanly;
+  // the compat mouse events a tap fires afterwards carry no pointer event.
+  const touchUI = matchMedia("(hover: none)");
+  let lastPointer = touchUI.matches ? "touch" : "mouse";
+  document.addEventListener("pointerdown", (e) => { lastPointer = e.pointerType; }, true);
+  document.addEventListener("pointermove", (e) => { if (e.pointerType === "mouse") lastPointer = "mouse"; }, true);
+  const touchInput = () => lastPointer === "touch";
+  let scrub = null; // {year, code}: last touch position; code = nearest grey line
+
   function update() {
     writeUrl();
     renderControls();
     renderLegend();
     renderChart();
+    renderReadout();
     renderTable();
   }
 
@@ -375,6 +387,7 @@
     const width = Math.max(chartWrap.clientWidth - 12, 320);
     const height = Math.max(Math.min(width * 0.56, 560), 340);
     layout = drawChart(svg, width, height, false);
+    paintScrub(); // the rebuild cleared the crosshair and emphasis
   }
 
   // Draw the chart into `svg` — deliberately shadows the page element, since
@@ -561,9 +574,9 @@
           d: linePath(metricValues(code), x, y),
           class: "hit", fill: "none", stroke: "transparent", "stroke-width": 9,
         }, hits);
-        p.addEventListener("mouseenter", () => { hoveredBg = code; styleBg(code, true); });
-        p.addEventListener("mouseleave", () => { hoveredBg = null; styleBg(code, false); });
-        p.addEventListener("click", () => toggleState(code));
+        p.addEventListener("mouseenter", () => { if (touchInput()) return; hoveredBg = code; styleBg(code, true); });
+        p.addEventListener("mouseleave", () => { if (touchInput()) return; hoveredBg = null; styleBg(code, false); });
+        p.addEventListener("click", () => { if (!touchInput()) toggleState(code); });
       }
     }
 
@@ -667,7 +680,7 @@
   // --------------------------------------------------------------- hover
 
   svg.addEventListener("mousemove", (ev) => {
-    if (!layout) return;
+    if (!layout || touchInput()) return;
     const rect = svg.getBoundingClientRect();
     const px = ev.clientX - rect.left;
     const py = ev.clientY - rect.top;
@@ -679,16 +692,7 @@
     const year = YEARS[Math.round(frac * (YEARS.length - 1))];
     const yi = YEARS.indexOf(year);
 
-    // crosshair
-    let cross = svg.querySelector(".crosshair");
-    if (!cross) {
-      cross = el("line", {
-        class: "crosshair",
-        stroke: "rgba(11,11,11,0.35)", "stroke-width": 1, "stroke-dasharray": "3 3",
-      }, svg);
-    }
-    cross.setAttribute("x1", x(year)); cross.setAttribute("x2", x(year));
-    cross.setAttribute("y1", margin.top); cross.setAttribute("y2", margin.top + ph);
+    drawCrosshair(year);
 
     // tooltip rows: highlighted series (+ hovered background state)
     const rows = [];
@@ -718,26 +722,7 @@
       row.appendChild(html("span", "tt-val", fmt(r.v)));
       tooltip.appendChild(row);
     }
-    for (const note of fedNotes) {
-      const row = html("div", "tt-note");
-      row.appendChild(html("span", "rule"));
-      row.appendChild(html("span", "", note));
-      tooltip.appendChild(row);
-    }
-    if (state.notes) {
-      for (const s of state.series) {
-        for (const code of s.states) {
-          for (const note of notesFor(code, year)) {
-            const row = html("div", "tt-note");
-            const dot = html("span", "dot");
-            dot.style.background = seriesColor(s);
-            row.appendChild(dot);
-            row.appendChild(html("span", "", code + " — " + note));
-            tooltip.appendChild(row);
-          }
-        }
-      }
-    }
+    appendNotes(tooltip, year);
     tooltip.hidden = false;
     const wrapRect = chartWrap.getBoundingClientRect();
     let tx = ev.clientX - wrapRect.left + 14;
@@ -748,6 +733,123 @@
   });
 
   svg.addEventListener("mouseleave", hideTooltip);
+
+  function drawCrosshair(year) {
+    const { margin, ph, x } = layout;
+    let cross = svg.querySelector(".crosshair");
+    if (!cross) {
+      cross = el("line", {
+        class: "crosshair",
+        stroke: "rgba(11,11,11,0.35)", "stroke-width": 1, "stroke-dasharray": "3 3",
+      }, svg);
+    }
+    cross.setAttribute("x1", x(year)); cross.setAttribute("x2", x(year));
+    cross.setAttribute("y1", margin.top); cross.setAttribute("y2", margin.top + ph);
+  }
+
+  // Federal notes as dashed-rule rows, then highlighted states' notes as dots.
+  function appendNotes(parent, year) {
+    if (!state.notes) return;
+    for (const note of notesFor("US", year)) {
+      const row = html("div", "tt-note");
+      row.appendChild(html("span", "rule"));
+      row.appendChild(html("span", "", note));
+      parent.appendChild(row);
+    }
+    for (const s of state.series) {
+      for (const code of s.states) {
+        for (const note of notesFor(code, year)) {
+          const row = html("div", "tt-note");
+          const dot = html("span", "dot");
+          dot.style.background = seriesColor(s);
+          row.appendChild(dot);
+          row.appendChild(html("span", "", code + " — " + note));
+          parent.appendChild(row);
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------- touch scrub
+
+  // Year from x; nearest painted grey line from y, within finger slop.
+  function onScrub(ev) {
+    if (ev.pointerType !== "touch" || !layout) return;
+    const rect = svg.getBoundingClientRect();
+    const { margin, pw, y } = layout;
+    const frac = Math.min(Math.max((ev.clientX - rect.left - margin.left) / pw, 0), 1);
+    const yi = Math.round(frac * (YEARS.length - 1));
+    const py = ev.clientY - rect.top;
+    let code = null, best = 28;
+    if (!othersHidden()) {
+      for (const c of CODES) {
+        if (seriesForState(c)) continue;
+        const v = metricValues(c)[yi];
+        if (v == null) continue;
+        const d = Math.abs(y(v) - py);
+        if (d < best) { best = d; code = c; }
+      }
+    }
+    if (scrub && scrub.code && scrub.code !== code) styleBg(scrub.code, false);
+    scrub = { year: YEARS[yi], code };
+    paintScrub();
+    renderReadout();
+  }
+  svg.addEventListener("pointerdown", onScrub);
+  svg.addEventListener("pointermove", onScrub);
+
+  function paintScrub() {
+    if (!scrub || !layout) return;
+    drawCrosshair(scrub.year);
+    if (scrub.code && !seriesForState(scrub.code)) styleBg(scrub.code, true);
+  }
+
+  // Phone stand-in for legend + tooltip: values for the scrubbed year (latest
+  // until touched), and the nearest grey line with an Add button — the touch
+  // version of desktop's "click to add".
+  function renderReadout() {
+    const box = $("#readout");
+    const notesBox = $("#readout-notes");
+    box.textContent = "";
+    notesBox.textContent = "";
+    if (!touchUI.matches) return;
+    const year = scrub ? scrub.year : YEARS[YEARS.length - 1];
+    const yi = YEARS.indexOf(year);
+    box.appendChild(html("div", "ro-year", String(year)));
+    const addRow = (cls, color, label, v) => {
+      const row = html("div", cls);
+      const sw = html("span", "swatch");
+      sw.style.background = color;
+      row.appendChild(sw);
+      row.appendChild(html("span", "ro-name", label));
+      row.appendChild(html("span", "ro-val", fmt(v)));
+      box.appendChild(row);
+      return row;
+    };
+    for (const s of state.series) {
+      const v = s.type === "group" ? groupMean(s.states)[yi] : metricValues(s.states[0])[yi];
+      addRow("ro-row", seriesColor(s), s.type === "group" ? s.label + " (mean)" : s.label, v);
+    }
+    const code = scrub && scrub.code && !seriesForState(scrub.code) ? scrub.code : null;
+    if (code) {
+      const row = addRow("ro-row ro-other", BG_LINE_HOVER, DATA.states[code].name, metricValues(code)[yi]);
+      const atCap = freeSlot() < 0 && !state.activeGroup;
+      const b = html("button", "btn", atCap ? "Colors full" : "Add");
+      b.type = "button";
+      b.disabled = atCap;
+      b.addEventListener("click", () => toggleState(code));
+      row.appendChild(b);
+    } else if (!othersHidden()) {
+      const row = html("div", "ro-row ro-other");
+      const sw = html("span", "swatch");
+      sw.style.background = BG_LINE;
+      row.appendChild(sw);
+      row.appendChild(html("span", "ro-hint", "Touch a grey line to read it"));
+      box.appendChild(row);
+    }
+    appendNotes(notesBox, year);
+  }
+  touchUI.addEventListener("change", renderReadout);
 
   function hideTooltip() {
     tooltip.hidden = true;
