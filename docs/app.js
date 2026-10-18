@@ -684,13 +684,14 @@
     const rect = svg.getBoundingClientRect();
     const px = ev.clientX - rect.left;
     const py = ev.clientY - rect.top;
-    const { margin, pw, ph, x } = layout;
+    const { margin, pw, ph } = layout;
     if (px < margin.left || px > margin.left + pw || py < margin.top || py > margin.top + ph) {
       hideTooltip(); return;
     }
+    // Nearest year by index: YEARS is contiguous, so index spacing is year spacing.
     const frac = (px - margin.left) / pw;
-    const year = YEARS[Math.round(frac * (YEARS.length - 1))];
-    const yi = YEARS.indexOf(year);
+    const yi = Math.round(frac * (YEARS.length - 1));
+    const year = YEARS[yi];
 
     drawCrosshair(year);
 
