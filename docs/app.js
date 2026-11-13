@@ -247,6 +247,7 @@
   const tooltip = $("#tooltip");
   let hoveredBg = null; // state code under the pointer (background line)
   let layout = null;    // geometry of the last render, for hover math
+  let lastMouse = null; // {x, y} client coords while the mouse is over the chart
 
   // Touch: the chart only inspects (a tap is synthesized as hover + click, so
   // without this a tap meant to read a value toggled the line under it).
@@ -404,6 +405,13 @@
     const height = Math.max(Math.min(width * 0.56, 560), 340);
     layout = drawChart(svg, width, height, false);
     paintScrub(); // the rebuild cleared the crosshair and emphasis
+    // Same for the mouse: a click that adds or removes a line rebuilds the
+    // chart under a resting pointer, so repaint the hover state from it.
+    if (hoveredBg && seriesForState(hoveredBg) == null && !layout.bgPaths[hoveredBg]) hoveredBg = null;
+    if (lastMouse && !touchInput()) {
+      if (hoveredBg) styleBg(hoveredBg, true);
+      showTooltip(lastMouse.x, lastMouse.y);
+    }
   }
 
   // Draw the chart into `svg` — deliberately shadows the page element, since
@@ -697,9 +705,14 @@
 
   svg.addEventListener("mousemove", (ev) => {
     if (!layout || touchInput()) return;
+    lastMouse = { x: ev.clientX, y: ev.clientY };
+    showTooltip(ev.clientX, ev.clientY);
+  });
+
+  function showTooltip(clientX, clientY) {
     const rect = svg.getBoundingClientRect();
-    const px = ev.clientX - rect.left;
-    const py = ev.clientY - rect.top;
+    const px = clientX - rect.left;
+    const py = clientY - rect.top;
     const { margin, pw, ph } = layout;
     if (px < margin.left || px > margin.left + pw || py < margin.top || py > margin.top + ph) {
       hideTooltip(); return;
@@ -742,14 +755,28 @@
     appendNotes(tooltip, year);
     tooltip.hidden = false;
     const wrapRect = chartWrap.getBoundingClientRect();
-    let tx = ev.clientX - wrapRect.left + 14;
-    const ty = ev.clientY - wrapRect.top + 14;
-    if (tx + tooltip.offsetWidth > wrapRect.width - 8) tx = ev.clientX - wrapRect.left - tooltip.offsetWidth - 14;
+    let tx = clientX - wrapRect.left + 14;
+    let ty = clientY - wrapRect.top + 14;
+    if (tx + tooltip.offsetWidth > wrapRect.width - 8) tx = clientX - wrapRect.left - tooltip.offsetWidth - 14;
+    // Flip above the pointer when it would run past the card or the viewport,
+    // whichever ends first; a tooltip too tall for either pins to the floor.
+    const th = tooltip.offsetHeight;
+    const floor = Math.min(wrapRect.height, window.innerHeight - wrapRect.top) - 8;
+    if (ty + th > floor) {
+      ty = clientY - wrapRect.top - th - 14;
+      const ceil = Math.max(0, -wrapRect.top) + 8;
+      if (ty < ceil) ty = Math.max(ceil, floor - th);
+    }
     tooltip.style.left = tx + "px";
     tooltip.style.top = ty + "px";
-  });
+  }
 
-  svg.addEventListener("mouseleave", hideTooltip);
+  // Touch fires a compat mouseleave when the next tap lands elsewhere; the
+  // scrub crosshair persists with the readout, so only the mouse clears it.
+  svg.addEventListener("mouseleave", () => {
+    lastMouse = null;
+    if (!touchInput()) hideTooltip();
+  });
 
   function drawCrosshair(year) {
     const { margin, ph, x } = layout;
