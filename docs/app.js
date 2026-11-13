@@ -259,13 +259,30 @@
   const touchInput = () => lastPointer === "touch";
   let scrub = null; // {year, code}: last touch position; code = nearest grey line
 
-  function update() {
+  function update(keepControls) {
     writeUrl();
-    renderControls();
+    if (!keepControls) renderControls();
     renderLegend();
     renderChart();
     renderReadout();
     renderTable();
+  }
+
+  // Chips are built once and restyled in place by renderControls: rebuilding
+  // them on every update dropped keyboard focus after each toggle, and
+  // swallowed a click whose mousedown blurred a group-name input (the rebuild
+  // landed between mousedown and mouseup).
+  const chipEls = {};
+  for (const code of CODES) {
+    const b = html("button", "state-chip", code);
+    b.type = "button";
+    b.addEventListener("click", () => toggleState(code));
+    // Hover symmetry: pointing at a chip emphasizes its grey line, the same
+    // in-place restyle line hover uses; no-ops for highlighted/hidden states.
+    b.addEventListener("mouseenter", () => styleBg(code, true));
+    b.addEventListener("mouseleave", () => styleBg(code, false));
+    $("#state-grid").appendChild(b);
+    chipEls[code] = b;
   }
 
   function renderControls() {
@@ -280,28 +297,17 @@
     // state chips; at the cap, unowned chips are muted but stay clickable so
     // the click still lands in toggleState and flashes the explanation
     const atCap = freeSlot() < 0 && !state.activeGroup;
-    const grid = $("#state-grid");
-    grid.textContent = "";
     for (const code of CODES) {
-      const b = html("button", "state-chip", code);
-      b.type = "button";
-      b.title = DATA.states[code].name;
+      const b = chipEls[code];
       const owner = seriesForState(code);
+      const capped = !owner && atCap;
       b.setAttribute("aria-pressed", owner ? "true" : "false");
-      if (owner) {
-        b.classList.add("on");
-        b.style.background = seriesColor(owner);
-      } else if (atCap) {
-        b.classList.add("capped");
-        b.setAttribute("aria-disabled", "true");
-        b.title = DATA.states[code].name + " — all " + MAX_SERIES + " colors are in use";
-      }
-      b.addEventListener("click", () => toggleState(code));
-      // Hover symmetry: pointing at a chip emphasizes its grey line, the same
-      // in-place restyle line hover uses; no-ops for highlighted/hidden states.
-      b.addEventListener("mouseenter", () => styleBg(code, true));
-      b.addEventListener("mouseleave", () => styleBg(code, false));
-      grid.appendChild(b);
+      b.classList.toggle("on", !!owner);
+      b.style.background = owner ? seriesColor(owner) : "";
+      b.classList.toggle("capped", capped);
+      if (capped) b.setAttribute("aria-disabled", "true");
+      else b.removeAttribute("aria-disabled");
+      b.title = DATA.states[code].name + (capped ? " — all " + MAX_SERIES + " colors are in use" : "");
     }
 
     // series list
@@ -314,6 +320,7 @@
       sw.style.background = seriesColor(s);
       li.appendChild(sw);
 
+      const rm = html("button", "remove-btn", "×");
       const labelWrap = html("span", "series-label");
       if (s.type === "group") {
         const input = document.createElement("input");
@@ -322,7 +329,12 @@
         input.addEventListener("change", () => {
           if (/[:,]/.test(input.value)) flashHint('":" and "," can\'t be used in group names — the share URL needs them — so they were removed.');
           s.label = cleanLabel(input.value) || s.label;
-          update();
+          // Patch the row in place and skip renderControls: this fires on
+          // blur, and rebuilding the list here would destroy the × (or row)
+          // the user is in the middle of clicking.
+          input.value = s.label;
+          rm.setAttribute("aria-label", "Remove " + s.label);
+          update(true);
         });
         input.addEventListener("click", (e) => e.stopPropagation());
         labelWrap.appendChild(input);
@@ -331,15 +343,19 @@
       }
       li.appendChild(labelWrap);
 
-      const rm = html("button", "remove-btn", "×");
       rm.type = "button";
       rm.title = "Remove";
       rm.setAttribute("aria-label", "Remove " + s.label);
       rm.addEventListener("click", (e) => {
         e.stopPropagation();
+        const at = state.series.indexOf(s);
         state.series = state.series.filter((x) => x !== s);
         if (state.activeGroup === s.id) state.activeGroup = null;
         update();
+        // The row is gone; hand focus to its neighbour so keyboard users
+        // aren't thrown back to the top of the page.
+        const left = list.querySelectorAll(".remove-btn");
+        (left[Math.min(at, left.length - 1)] || $("#new-group")).focus();
       });
       li.appendChild(rm);
 
