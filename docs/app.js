@@ -289,9 +289,14 @@
   function renderControls() {
     // metric radios + band checkbox
     document.querySelectorAll('input[name="metric"]').forEach((r) => { r.checked = r.value === state.metric; });
+    // The band draws on individual states only, so with none highlighted the
+    // box is disabled and says why instead of ticking with no visible effect.
     const band = $("#band");
-    band.checked = state.band && METRICS[state.metric].hasSd;
-    band.disabled = !METRICS[state.metric].hasSd;
+    const hasSd = METRICS[state.metric].hasSd;
+    const bandable = hasSd && state.series.some((s) => s.type === "state");
+    band.checked = state.band && bandable;
+    band.disabled = !bandable;
+    $("#band-hint").textContent = hasSd && !bandable ? "(individual states only)" : "(MCMC only)";
     $("#hide-others").checked = state.hideOthers;
     $("#show-notes").checked = state.notes;
 
