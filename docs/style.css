@@ -29,7 +29,7 @@ body { background: var(--page); color: var(--ink); line-height: 1.45; }
   border: 1px solid var(--hairline); border-radius: 10px; padding: 1px 8px;
   vertical-align: 3px; background: var(--surface);
 }
-.subtitle { margin: 0; max-width: 68ch; color: var(--ink-2); font-size: 13.5px; }
+.subtitle { margin: 0; max-width: 68ch; color: var(--ink-2); font-size: 13.5px; text-wrap: balance; }
 .header-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 @media (max-width: 880px) {
   .site-header { flex-wrap: wrap; } /* actions drop to a row under the title */

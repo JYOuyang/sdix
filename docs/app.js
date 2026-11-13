@@ -79,12 +79,12 @@
   }
 
   function addIndividual(code) {
-    if (freeSlot() < 0) return flashHint("All " + MAX_SERIES + " colors are in use — remove a series or use groups.");
+    if (freeSlot() < 0) return flashHint("All " + MAX_SERIES + " colors are in use. Remove one, or combine states into a group.");
     state.series.push({ id: nextId++, type: "state", label: DATA.states[code].name, states: [code], slot: freeSlot() });
   }
 
   function newGroup() {
-    if (freeSlot() < 0) return flashHint("All " + MAX_SERIES + " colors are in use — remove a series first.");
+    if (freeSlot() < 0) return flashHint("All " + MAX_SERIES + " colors are in use. Remove one first.");
     groupCounter++;
     const g = { id: nextId++, type: "group", label: "Group " + groupCounter, states: [], slot: freeSlot() };
     state.series.push(g);
@@ -235,8 +235,9 @@
   }
 
   function defaultHint() {
-    if (state.activeGroup) return "Group armed: clicking a state adds it to the highlighted group. Click the group again — or press Esc — to disarm.";
-    if (!state.series.length) return "Nothing highlighted — all states are shown in grey. Click a state below or a grey line in the chart.";
+    const armed = state.series.find((s) => s.id === state.activeGroup);
+    if (armed) return "Adding to " + armed.label + ": states you click join it. Click the group again, or press Esc, to stop.";
+    if (!state.series.length) return "Nothing highlighted — all states are shown in grey. Pick a state above, or a grey line in the chart.";
     return "";
   }
 
@@ -296,7 +297,8 @@
     const bandable = hasSd && state.series.some((s) => s.type === "state");
     band.checked = state.band && bandable;
     band.disabled = !bandable;
-    $("#band-hint").textContent = hasSd && !bandable ? "(individual states only)" : "(MCMC only)";
+    $("#band-hint").textContent = !hasSd || bandable ? "(MCMC only)"
+      : state.series.length ? "(not shown for groups)" : "(highlight a state first)";
     $("#hide-others").checked = state.hideOthers;
     $("#show-notes").checked = state.notes;
 
@@ -340,6 +342,7 @@
           // the user is in the middle of clicking.
           input.value = s.label;
           rm.setAttribute("aria-label", "Remove " + s.label);
+          if (hintTimer == null) $("#series-hint").textContent = defaultHint(); // names the armed group
           update(true);
         });
         input.addEventListener("click", (e) => e.stopPropagation());
@@ -368,7 +371,7 @@
       if (s.type === "group") {
         li.appendChild(html("span", "member-chips", s.states.length ? s.states.join(", ") : "empty — click states to add"));
         li.style.cursor = "pointer";
-        li.title = "Click to arm/disarm this group for state clicks";
+        li.title = "Click to add states to this group";
         li.addEventListener("click", () => {
           state.activeGroup = state.activeGroup === s.id ? null : s.id;
           update();
